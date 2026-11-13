@@ -1,0 +1,3 @@
+# Archivos de texto siempre con finales de línea LF
+# (se crean con LF dentro del contenedor Docker/Linux)
+* text=auto eol=lf

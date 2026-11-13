@@ -28,6 +28,10 @@ Entorno de desarrollo basado en Docker: **PHP 8.4, Composer y Symfony CLI corren
 
 ## Puesta en marcha de un nuevo proyecto
 
+> **Git y finales de línea (LF):** antes del primer commit, deja un `.gitattributes` en la raíz
+> con `* text=auto eol=lf` (este repo ya lo trae). Así los archivos de texto quedan con LF en el repo
+> sin depender del `core.autocrlf` de cada máquina.
+
 ### 1. Construir la imagen
 ```powershell
 docker compose build
