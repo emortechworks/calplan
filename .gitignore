@@ -1,0 +1,11 @@
+# Configuración local de OpenCode (puede contener referencias/secretos)
+opencode.json
+
+# Credenciales de Docker Compose (valores de ${...} en docker-compose.yml)
+# Anclado a la raíz: no toca el .env de subcarpetas (defaults, sí van a git).
+/.env
+
+# Secretos reales de la app (regla 3: nunca van a git)
+# Sin anclar: aplica a la raíz y a cualquier subcarpeta.
+.env.local
+.env.*.local

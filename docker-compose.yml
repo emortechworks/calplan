@@ -1,0 +1,42 @@
+# Nombre normalizado del proyecto: minúsculas, sin acentos ni espacios.
+# De aquí salen los nombres de contenedores, red, volumen e imagen —
+# pon acá el nombre de tu carpeta (ver AGENTS.md, bloque "<nombre_proyecto>").
+name: ${PROJECT_NAME}
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    volumes:
+      - ./:/var/www/html
+    working_dir: /var/www/html
+    command: tail -f /dev/null
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-8000}:8000"
+    networks:
+      - app_group
+
+  mysql:
+    image: mysql:${MYSQL_VERSION:-8.4}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    restart: unless-stopped
+    networks:
+      - app_group
+
+volumes:
+  mysql_data:
+    name: ${PROJECT_NAME}-mysql
+
+networks:
+  app_group:
+    name: ${PROJECT_NAME}-net
