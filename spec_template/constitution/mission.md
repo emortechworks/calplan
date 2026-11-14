@@ -1,27 +1,34 @@
 # Misión
-Este es un proyecto personal con baja afluencia de peticiones. 
 
-Este es un proyecto web, que permite proponer una calendirización de los días de trabajo, descanso y asignación de area de un conjunto de trabajadores de tienda.
-
-Los días de descanzo serán propuestos en cuanto a las necesidades mensuales: propuestas con antelación (peticiones), días de descanso semanal, vacaciones, incapacidades, cursos, días de cumpleaños, días repuestos por apoyos, etc.
-
-Los días de trabajo y descanzo se expresarán al final en una tabla del mes con colores distintos para cada trabajador.
-
-El objetivo es obtener una propuesta viable de la planeación en un archivo descargable PDF ó CSV ó SHEET de google ó MXL (faltaría decidirlo después una vez se encuentre en un estado final el proyecto).
+_Define la razón de ser del proyecto. Es la referencia que decide si una feature "encaja" o no._
 
 ## Qué construimos
 
-Un sitio web personal que use la información de un conjunto de formularios para generar una propuesta mensual de asignacion de días de trabajo y descanzo para los trabajadores de una tienda.
+<Una o dos frases claras: qué es el producto y qué problema resuelve.>
+
+_Si ayuda, enumera las piezas principales del producto:_
+
+1. **<Pieza 1>** — <qué hace>.
+2. **<Pieza 2>** — <qué hace>.
+3. **<Pieza 3>** — <qué hace>.
 
 ## Para quién
 
-Es un sitio de ayuda a Gerentes de tienda que tiene varios colaboradores a su cargo y requieren hacer una planeación mensual de acuerdo a las necesidades del negocio.
+- <Usuario o público principal y qué busca.>
+- <Usuario secundario, si lo hay.>
+- <Otros interesados: cliente, equipo, autor…>
 
 ## Principios
 
 _Las ideas rectoras que guían las decisiones de producto y técnicas. 3-5 puntos._
 
+- **<Principio>** — <qué implica en la práctica>.
+- **<Principio>** — <qué implica en la práctica>.
+- **<Principio>** — <qué implica en la práctica>.
 
 ## Qué NO es
 
 _Acota el alcance: lo que el proyecto deliberadamente no pretende ser. Evita malentendidos y feature creep._
+
+- <Algo que el proyecto NO es / NO hace.>
+- <Otro límite de alcance.>
