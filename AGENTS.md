@@ -64,6 +64,10 @@ docker compose down -v       # ⚠️ borra los datos de MySQL — solo si se pi
 5. **Credenciales = solo red local**, nunca publicar. Los valores viven en el `.env` raíz y en el
    de la app (tabla abajo), no en archivos trackeados. El acceso a esos archivos lo bloquean los
    permisos de OpenCode (`opencode.json`), no este archivo.
+6. **El tech-stack se mantiene vivo:** cada vez que se agregue, cambie o retire cualquier
+   herramienta, servicio, paquete, extensión o dependencia del proyecto, se actualiza **en el
+   mismo cambio** `spec_template/constitution/tech-stack.md` para que informe de todas las
+   herramientas implementadas. Lo que no figure ahí no se considera parte del stack.
 
 ## Secretos
 
