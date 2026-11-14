@@ -1,6 +1,6 @@
-# 001 · <Nombre de la feature>
+# 001 · Controlador de inicio
 
-**Estado:** Propuesta
+**Estado:** Hecho ✅
 
 ## Qué hace
 
@@ -12,7 +12,7 @@ Punto de anclaje inicial del sitio
 
 ## Criterios de aceptación
 
-- [ ] La página direge al index con el saludo de controller
+- [x] La página direge al index con el saludo de controller
 
 
 ## Fuera de alcance

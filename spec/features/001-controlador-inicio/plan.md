@@ -10,4 +10,9 @@ Se crea un controlador de que proporcione un punto de anclage raíz para el siti
 
 ## Decisiones
 
+- El maker genera por defecto `/home`; se cambió a `/` porque el plan pide un punto de anclaje raíz para el sitio.
+- Se creó el controlador con `--with-tests` (la constitución exige un test por feature): `tests/Controller/HomeControllerTest.php`, GET `/` → 200.
+
 ## Riesgos
+
+- Ninguno detectado.
