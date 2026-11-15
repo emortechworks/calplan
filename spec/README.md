@@ -7,6 +7,7 @@ spec/
 ├── constitution/            ← reglas estables del proyecto (cambian poco)
 │   ├── mission.md           ← qué construimos y para quién
 │   ├── tech-stack.md        ← tecnologías, convenciones y límites
+│   ├── dominio.md           ← modelo de datos y reglas del negocio
 │   └── roadmap.md           ← orden de las features
 └── features/                ← una carpeta por feature
     └── NNN-nombre-feature/

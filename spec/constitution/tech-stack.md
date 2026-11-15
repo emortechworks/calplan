@@ -36,9 +36,7 @@ Todos vía Docker (no hay PHP/Composer/MySQL en el host). Sustituir `<PROJECT_NA
 
 ## Modelo de datos / dominio
 
-_Aún no hay entidades ni esquema (`src/Entity/` vacío; `migrations/` vacía)._ No documentar campos todavía; el modelo se define junto con la primera feature de persistencia, vía migraciones.
-
-Candidatos en bruto de la misión (no confirmados, solo orientación): `Trabajador` (nombre, área/rol, contrato), `AsignacionDia` (fecha, trabajador, tipo de día: trabajo / descanso semanal / vacaciones / incapacidad / curso / cumpleaños / repuesto / etc.), `PeticionMensual` (propuestas con antelación, vinculadas al mes y trabajador). Se introducirán uno a uno vía `make:migration`.
+El modelo del dominio está documentado en [dominio.md](dominio.md). Aún no hay entidades ni esquema (`src/Entity/` vacío; `migrations/` vacía); las entidades se introducirán una a una vía migraciones.
 
 ## Convenciones
 
