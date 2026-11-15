@@ -4,6 +4,7 @@
 
 - **Lenguaje:** PHP 8.4 (imagen `php:8.4-cli`, imagen construida en `docker/php/Dockerfile`).
 - **Framework / runtime:** Symfony 8.1 (Flex, `8.1.*`) con Twig 3 y asset-mapper + Stimulus/Turbo (UX). Servidor de desarrollo: Symfony CLI embebido en el contenedor `php`, puerto `8000` (con `--allow-all-ip`).
+- **UI:** Bootstrap 5.3.9 (+ `@popperjs/core` 2.11.8), instalado y servido con `importmap:require` (archivos en `assets/vendor/...`, **sin CDN**).
 - **Base de datos:** MySQL 8.4 (contenedor `mysql`, servicio `mysql`), base `calplan_db` con usuario dedicado para la app. Doctrine ORM 3.7 + Doctrine Migrations. Conexión desde la app vía `mysql` (nombre del servicio en la red Docker).
 - **Tests:** PHPUnit 13.4 (+ BrowserKit / css-selector) configurado en `phpunit.dist.xml`; `tests/` existe pero está vacío — aún no hay casos. Cada feature debe cubrir sus pruebas (WebTestCase / KernelTestCase) antes de darla por terminada.
 - **Despliegue:** Sin despliegue público — entorno local de desarrollo personal en Docker (puertos publicados en `0.0.0.0` para la red local). No hay pipeline ni hosting definido deliberadamente todavía.
@@ -29,6 +30,7 @@ Todos vía Docker (no hay PHP/Composer/MySQL en el host). Sustituir `<PROJECT_NA
 - Composer: `docker compose exec -w /var/www/html/app_calplan php composer <comando>`
 - Consola / SQL: `docker exec -w /var/www/html/app_calplan <PROJECT_NAME>-php-1 php bin/console <comando>` (p. ej. `dbal:run-sql "SELECT 1"`)
 - Tests: `docker compose exec -w /var/www/html/app_calplan php bin/phpunit`
+- Instalar paquetes JS/CSS con importmap (auto-hospedados): `php bin/console importmap:require <paquete>`
 - Lint: no hay php-cs-fixer/linting configurado aún; validación manual según las reglas de estilo de abajo.
 - Migraciones: `php bin/console make:migration` → `doctrine:migrations:migrate` (nunca `doctrine:schema:update`).
 
