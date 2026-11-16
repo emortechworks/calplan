@@ -14,6 +14,8 @@ El objetivo es obtener una propuesta viable de la planeación en un archivo desc
 
 Un sitio web **local** que, a partir de un conjunto de formularios, permita:
 
+**Varios usuarios en la misma red pueden registrarse** con su cuenta y acceder a la app. Cada usuario gestiona **sus propias tiendas y su propio personal**; nadie ve los datos de otro usuario (privacidad por cuenta).
+
 1. **Seleccionar la tienda** a la que aplica la planeación.
 2. **Seleccionar el intervalo de tiempo** del plan (semana calendario, lunes–domingo).
 3. **Seleccionar el personal** que pertenece a esa tienda.
@@ -30,7 +32,7 @@ Cada personal debe cumplir un total de **48 horas de trabajo a la semana** (jorn
 
 ## Para quién
 
-Es un sitio de ayuda a Gerentes de tienda que tienen varios colaboradores a su cargo y requieren hacer una planeación semanal de acuerdo a las necesidades del negocio.
+Es un sitio de ayuda a **gerentes de tienda** (y usuarios autorizados a crear su cuenta) que tienen varios colaboradores a su cargo y requieren hacer una planeación semanal de acuerdo a las necesidades del negocio. Cualquiera en la red local puede registrarse; cada usuario tiene sus propias tiendas y su propio personal.
 
 ## Principios
 
@@ -45,5 +47,5 @@ Es un sitio de ayuda a Gerentes de tienda que tienen varios colaboradores a su c
 - **No es un sistema de nómina:** no calcula pagos ni impuestos; las horas son de planeación, no de nómina.
 - **No es un RRHH completo:** no gestiona expedientes, contratos, normas legales ni capacitaciones formales.
 - **No es integración con checador/asistencia:** no recibe datos de entrada ni faltas en tiempo real; las incidencias se capturan manualmente.
-- **No es multiempresa en la nube:** sitio local para el usuario, sus tiendas y su red — sin sincronización externa (por ahora).
+- **No es multiempresa en la nube ni tiene vista global:** varios usuarios con cuentas locales, cada uno ve únicamente sus tiendas y personal; sin sincronización externa ni administración central.
 - **No decide por el gerente:** el sistema propone, el gerente valida y ajusta.

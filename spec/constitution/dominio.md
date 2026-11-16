@@ -4,11 +4,18 @@ _Modelo de datos del negocio. Entidades centrales, relaciones y reglas no obvias
 
 ## Entidades
 
+### Usuario
+- Persona que accede al sistema. **Cualquiera en la red local puede registrarse**; no hay aprobación ni cuenta de administrador.
+- Se identifica por su **email** y guarda su contraseña con hash seguro. Rol único: `ROLE_USER`.
+- **Propiedad de datos (privacidad por cuenta):** cada usuario ve únicamente sus tiendas, su personal, sus incidencias y sus propuestas; no hay vista global ni datos compartidos entre usuarios.
+- Un `Usuario` tiene N `Tienda`; cada `Tienda` tiene N `Colaborador` (y por tanto el personal de cada tienda pertenece al mismo usuario).
+
 ### Tienda
-- Sucursal donde se hace la planeación. Cada colaborador pertenece al menos a una; la propuesta se genera por tienda.
+- Sucursal **propiedad de un usuario** donde se hace la planeación. Cada colaborador pertenece al menos a una; la propuesta se genera por tienda.
 
 ### Colaborador (trabajador)
 - Persona asignable. Tipo/rol base: gerente titular, suplente, encargado de área u otros.
+- Pertenece a una tienda (y por tanto al usuario dueño de esa tienda); solo su propietario puede ver y asignarlo.
 - **Perfil flexible:** atributos clave-valor definibles por el usuario (sexo, velocidad, fuerza, puntualidad, confiabilidad, vencimiento de contrato, etc.). No van en columnas fijas; el catálogo lo arma el usuario.
 
 ### Rol / Asignación
