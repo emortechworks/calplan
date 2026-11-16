@@ -52,7 +52,7 @@ El modelo del dominio está documentado en [dominio.md](dominio.md). Aún no hay
 
 ## Estilo visual
 
-Sin definir. El objetivo final (misión) es una tabla mensual con colores distintos por trabajador. Cuando exista la UI se fijará: paleta/tokens por trabajador, tipografía, reglas responsive de la tabla. Hasta entonces no se fija nada en este documento.
+Sin definir. El objetivo final (misión) es una tabla semanal con colores distintos por trabajador. Cuando exista la UI se fijará: paleta/tokens por trabajador, tipografía, reglas responsive de la tabla. Hasta entonces no se fija nada en este documento.
 
 ## Límites duros
 
