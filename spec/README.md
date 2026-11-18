@@ -21,5 +21,9 @@ spec/
 2. Escribir `spec.md`: qué hace, por qué y criterios de aceptación medibles.
 3. Escribir `plan.md`: enfoque técnico y decisiones, respetando `constitution/tech-stack.md`.
 4. Desglosar en `tasks.md` y marcar el progreso.
-5. Implementar y validar (build/tests/lint o lo que defina la constitución).
+5. Implementar y validar (build/tests/lint o lo que defina la constitución),
+   con comentarios mínimos: solo para lo que el código no se explica por sí
+   mismo —el "por qué", no el "qué"—, en español, en tercera persona y directos
+   ("asigna", "calcula", "valida"). Comentar solo las secciones importantes; nada
+   redundante.
 6. Actualizar `constitution/roadmap.md` (mover la feature a "Hecho").
