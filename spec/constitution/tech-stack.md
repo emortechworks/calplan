@@ -61,4 +61,5 @@ Sin definir. El objetivo final (misión) es una tabla semanal con colores distin
 - `app_calplan/.env` versionado = solo defaults; secretos reales en `.env.local` (git-ignored) o vault; nunca credenciales en el repo (el `.gitattributes`/renormalize mantienen LF; revisar igualmente que no se committee nada sensible).
 - Sin deps nuevas sin avisar; preferir lo cubierto por Symfony/Flex o el stack ya instalado antes que paquetes terceros.
 - No borrar archivos generados por recipes ni reescribir `config/packages` sin entender el recipe.
+- **Nada externo en frontend:** JS/CSS/fuentes/íconos/imágenes se sirven siempre desde el proyecto (AssetMapper/importmap o `public/`); ninguna página referencia CDN ni servicios de terceros. (Los enlaces de documentación en comentarios YAML no descargan nada; no aplican.)
 - Commits en español, imperativos, un commit por cambio lógico; no commitear secretos.
