@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mi cuenta · Calendario Planeación{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <h1 class="display-6 fw-semibold mb-3">Mi cuenta</h1>
+                <p class="lead mb-4">Has iniciado sesión como:</p>
+                <p class="fs-5 fw-bold">{{ app.user.userIdentifier }}</p>
+                <form action="{{ path('app_logout') }}" method="post" class="d-inline">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                    <button type="submit" class="btn btn-dark">Cerrar sesión</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

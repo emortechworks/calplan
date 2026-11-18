@@ -29,7 +29,7 @@ Todos vía Docker (no hay PHP/Composer/MySQL en el host). Sustituir `<PROJECT_NA
 - Servidor dev: `docker exec -d -w /var/www/html/app_calplan <PROJECT_NAME>-php-1 symfony server:start --allow-all-ip --port=8000 -d` (detener: `server:stop`)
 - Composer: `docker compose exec -w /var/www/html/app_calplan php composer <comando>`
 - Consola / SQL: `docker exec -w /var/www/html/app_calplan <PROJECT_NAME>-php-1 php bin/console <comando>` (p. ej. `dbal:run-sql "SELECT 1"`)
-- Tests: `docker compose exec -w /var/www/html/app_calplan php bin/phpunit`
+- Tests: `docker compose exec -w /var/www/html/app_calplan php php bin/phpunit` (requiere la base `calplan_db_test`: `doctrine:database:create --if-not-exists --env=test`)
 - Instalar paquetes JS/CSS con importmap (auto-hospedados): `php bin/console importmap:require <paquete>`
 - Lint: no hay php-cs-fixer/linting configurado aún; validación manual según las reglas de estilo de abajo.
 - Migraciones: `php bin/console make:migration` → `doctrine:migrations:migrate` (nunca `doctrine:schema:update`).

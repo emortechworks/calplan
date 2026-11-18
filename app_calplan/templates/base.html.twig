@@ -24,6 +24,18 @@
     <nav class="navbar navbar-expand-md navbar-dark bg-dark border-bottom">
       <div class="container">
         <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">Calendario Planeación</a>
+        <div class="d-flex align-items-center gap-2">
+          {% if app.user %}
+            <a class="btn btn-outline-light btn-sm" href="{{ path('app_cuenta') }}">Mi cuenta</a>
+            <form action="{{ path('app_logout') }}" method="post" class="m-0">
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+              <button type="submit" class="btn btn-sm btn-dark border border-light">Cerrar sesión</button>
+            </form>
+          {% else %}
+            <a class="btn btn-outline-light btn-sm" href="{{ path('app_login') }}">Entrar</a>
+            <a class="btn btn-light btn-sm" href="{{ path('app_register') }}">Registrarse</a>
+          {% endif %}
+        </div>
       </div>
     </nav>
     <main class="container my-4 flex-grow-1">
