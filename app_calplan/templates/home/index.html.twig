@@ -1,18 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Inicio · Calendario Planeación{% endblock %}
+{% block title %}
+  Inicio · Calendario Planeación
+{% endblock %}
 
 {% block body %}
-<div class="p-5 mb-4 bg-body-tertiary rounded-3">
-    <div class="container-fluid py-3">
-        <h1 class="display-5 fw-semibold">Hello {{ controller_name }}! ✅</h1>
-        <p class="fs-5 col-lg-8">
-            Base del sitio funcionando con <strong>Bootstrap 5.3</strong> · servido desde el proyecto
-            (sin CDN) vía AssetMapper.
-        </p>
-        <hr class="my-4">
-        <a class="btn btn-dark" href="{{ path('app_home') }}">
-            Ancla raíz del sitio</a>
+  <div class="p-5 mb-4 bg-body-tertiary rounded-3 text-center">
+    <div class="container-fluid py-5">
+      <h1 class="display-3 fw-bold">Planeación semanal para tienda</h1>
+      <p class="lead col-lg-8 mx-auto">Selecciona la tienda, la semana y el personal</p>Genera una propuesta de calendario semanal con días de descanso, horario de comida y roles.<p></p>
+      <hr class="my-4" />
+      <button class="btn btn-dark btn-lg px-4" type="button" disabled>Autenticación próximamente</button>
     </div>
-</div>
+  </div>
 {% endblock %}
