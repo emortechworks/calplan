@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar tienda · Calendario Planeación{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <h1 class="h3 mb-4">Editar tienda</h1>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        {% include 'tienda/_form.html.twig' %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

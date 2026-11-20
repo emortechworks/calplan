@@ -1,0 +1,7 @@
+{{ form_errors(form) }}
+{{ form_start(form) }}
+  {{ form_row(form.nombre) }}
+  {{ form_row(form.codigo) }}
+  <button type="submit" class="btn btn-dark">Guardar</button>
+  <a class="btn btn-outline-secondary" href="{{ path('app_tienda_index') }}">Cancelar</a>
+{{ form_end(form) }}

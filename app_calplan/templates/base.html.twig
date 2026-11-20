@@ -26,6 +26,7 @@
         <a class="navbar-brand fw-bold" href="{{ path('app_home') }}">Calendario Planeación</a>
         <div class="d-flex align-items-center gap-2">
           {% if app.user %}
+            <a class="nav-link text-white" href="{{ path('app_tienda_index') }}">Mis tiendas</a>
             <a class="nav-link text-white" href="{{ path('app_cuenta') }}">{{ app.user.userIdentifier }}</a>
             <form action="{{ path('app_logout') }}" method="post" class="m-0">
               <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}" />
@@ -39,6 +40,9 @@
       </div>
     </nav>
     <main class="container my-4 flex-grow-1">
+      {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
       {% block body %}
 
       {% endblock %}
