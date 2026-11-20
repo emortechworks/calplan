@@ -57,8 +57,9 @@ El modelo del dominio está documentado en [dominio.md](dominio.md). Aún no hay
 
 ## Estilo visual
 
-- **Botones (homologados):** en fondos claros (tarjetas, fondos blancos/grises) se usa `btn btn-dark`; en fondos oscuros (navbar `bg-dark`) se usa `btn btn-light btn-sm` o `btn btn-outline-light btn-sm`. Nunca `btn-dark` sobre fondo oscuro. Los modificadores de tamaño (`btn-sm`, `btn-lg`, `w-100`) se añaden según el contexto.
+- **Botones (homologados):** todos los botones de la aplicación llevan `m-2` (margen) y `p-2` (padding). En fondos claros se usa `btn btn-dark`; en fondos oscuros (navbar `bg-dark`) se usa `btn btn-light btn-sm` o `btn btn-outline-light btn-sm`. Nunca `btn-dark` sobre fondo oscuro. Los modificadores de tamaño (`btn-sm`, `btn-lg`, `w-100`) se añaden según el contexto.
 - Pendiente: paleta/tokens de color por trabajador para la tabla semanal, tipografía y reglas responsive de la tabla.
+- **Formularios (homologado):** cada campo o row en un div `mb-1` (o su wrapper del `form_row`); donde falte espacio, agregar `m-1` en `label_attr`/`attr`; inputs y labels con margen pequeño (`m-1`/`mb-1`).
 
 ## Límites duros
 
