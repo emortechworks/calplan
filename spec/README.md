@@ -27,3 +27,17 @@ spec/
    ("asigna", "calcula", "valida"). Comentar solo las secciones importantes; nada
    redundante.
 6. Actualizar la documentación de la feature en el mismo commit: `spec.md` (Estado → Hecho ✅, criterios aceptados ✅), `plan.md` (Decisiones y Riesgos), `tasks.md` (checkmarks). Mover la feature a "Hecho" en `constitution/roadmap.md`.
+
+## Flujo de entrega por feature
+
+Cada vez que se empiece un nuevo feature, se sigue este flujo:
+
+1. **Crear rama nueva** antes de tocar código: `git switch -c feature-NNN-nombre`
+   (`NNN` es el número de la feature según `constitution/roadmap.md`, ej. `feature-006-colaboradores`).
+2. **Implementar** dentro de esa rama.
+3. **Commit** de la feature.
+4. **Push** de la rama.
+5. **Merge a `main`** de la rama terminada.
+6. Las ramas terminadas se **mantienen** (no se borran).
+
+Hoy se continúa desde `main`; la siguiente feature (006 · Colaboradores) arrancará con la rama nueva cuando se acelere.
