@@ -36,8 +36,8 @@ Cada vez que se empiece un nuevo feature, se sigue este flujo:
    (`NNN` es el número de la feature según `constitution/roadmap.md`, ej. `feature-006-colaboradores`).
 2. **Implementar** dentro de esa rama.
 3. **Commit** de la feature.
-4. **Push** de la rama.
-5. **Merge a `main`** de la rama terminada.
+4. **Preguntar** por el push de la rama → si aprobas, pusheamos.
+5. **Preguntar** por el merge a `main` de la rama terminada → si aprobas, fusionamos.
 6. Las ramas terminadas se **mantienen** (no se borran).
 
 Hoy se continúa desde `main`; la siguiente feature (006 · Colaboradores) arrancará con la rama nueva cuando se acelere.
