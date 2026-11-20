@@ -52,7 +52,8 @@ El modelo del dominio está documentado en [dominio.md](dominio.md). Aún no hay
 
 ## Estilo visual
 
-Sin definir. El objetivo final (misión) es una tabla semanal con colores distintos por trabajador. Cuando exista la UI se fijará: paleta/tokens por trabajador, tipografía, reglas responsive de la tabla. Hasta entonces no se fija nada en este documento.
+- **Botones (homologados):** en fondos claros (tarjetas, fondos blancos/grises) se usa `btn btn-dark`; en fondos oscuros (navbar `bg-dark`) se usa `btn btn-light btn-sm` o `btn btn-outline-light btn-sm`. Nunca `btn-dark` sobre fondo oscuro. Los modificadores de tamaño (`btn-sm`, `btn-lg`, `w-100`) se añaden según el contexto.
+- Pendiente: paleta/tokens de color por trabajador para la tabla semanal, tipografía y reglas responsive de la tabla.
 
 ## Límites duros
 
