@@ -69,6 +69,24 @@ docker compose down -v       # ⚠️ borra los datos de MySQL — solo si se pi
    mismo cambio** `spec_template/constitution/tech-stack.md` para que informe de todas las
    herramientas implementadas. Lo que no figure ahí no se considera parte del stack.
 
+## Gotchas frecuentes (Windows / agentes)
+
+- **Editar archivos con PowerShell:** nunca use `Set-Content` para reescribir archivos del repo
+  (grabará BOM UTF-8; Symfony lo rechaza en `.env`, por ejemplo). Use
+  `[System.IO.File]::WriteAllLines($ruta, $lineas, (New-Object System.Text.UTF8Encoding($false)))`
+  para escribir sin BOM, o preferido aún: a `edit`/`write`.
+- **`grep` no existe en PowerShell:** use `Select-String -Pattern ... -Path ...`. Al ejecutar comandos
+  en Docker/Compose, siempre poner `workdir` explícito (`d:\Programación\Calendario_Planeacion`
+  o `d:\Programación\Calendario_Planeacion\app_calplan`).
+- **Makers interactivos:** pásalos TODOS los argumentos junto con `--no-interaction`;
+  `make:user` espera el nombre corto (`User`), no el FQCN (`App\Entity\User`).
+- **`#[Route]` no va a nivel de clase del controlador:** a nivel de clase actúa como prefijo de ruta,
+  no como ruta. Póngalo en el **método**.
+- **Servidor de desarrollo:** no lo arranque con `docker compose up`; usar
+  `docker exec -d -w /var/www/html/app_calplan calendario_planeacion-php-1 symfony server:start --allow-all-ip --port=8000 -d`.
+- **Git + antivirus:** si `git add` falla con "Permission denied" en `.git/objects` (antivirus
+  bloqueando temporalmente), reintentar; objetos sueltos revisar con `git fsck` / `git gc --prune=now`.
+
 ## Secretos
 
 | Archivo | Rol | Git |

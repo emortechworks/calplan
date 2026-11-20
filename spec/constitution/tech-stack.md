@@ -7,6 +7,11 @@
 - **UI:** Bootstrap 5.3.9 (+ `@popperjs/core` 2.11.8), instalado y servido con `importmap:require` (archivos en `assets/vendor/...`, **sin CDN**).
 - **Base de datos:** MySQL 8.4 (contenedor `mysql`, servicio `mysql`), base `calplan_db` con usuario dedicado para la app. Doctrine ORM 3.7 + Doctrine Migrations. Conexión desde la app vía `mysql` (nombre del servicio en la red Docker).
 - **Tests:** PHPUnit 13.4 (+ BrowserKit / css-selector) configurado en `phpunit.dist.xml`; `tests/` existe pero está vacío — aún no hay casos. Cada feature debe cubrir sus pruebas (WebTestCase / KernelTestCase) antes de darla por terminada.
+- **Convenciones de pruebas (gotchas frecuentes):**
+  - Entorno de tests: base MySQL `calplan_db_test` (creada con `doctrine:database:create --if-not-exists --env=test`) y usuario `calplan_test` (privilegios solo sobre esa base) — credenciales en `app_calplan/.env.test.local`, **git-ignorado**.
+  - En `WebTestCase`: llama siempre primero a `static::createClient()`; use `static::getContainer()` después de eso, nunca al revés.
+  - Para asertar estados de entidades que cambian **durante** las peticiones HTTP, aserta sobre la conexión DBAL (`connection->fetchOne('SELECT ...')`), no con `EntityManager::find()` (su identity map no refleja los cambios entre requests).
+  - Para tokens CSRF de aterrizaje/cuentas: lee el `_token` oculto del HTML renderizado (o via el `KernelBrowser`) — no uses el `security.csrf.token_manager` fuera de una petición.
 - **Despliegue:** Sin despliegue público — entorno local de desarrollo personal en Docker (puertos publicados en `0.0.0.0` para la red local). No hay pipeline ni hosting definido deliberadamente todavía.
 
 ## Archivos / módulos clave

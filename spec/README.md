@@ -26,4 +26,4 @@ spec/
    mismo —el "por qué", no el "qué"—, en español, en tercera persona y directos
    ("asigna", "calcula", "valida"). Comentar solo las secciones importantes; nada
    redundante.
-6. Actualizar `constitution/roadmap.md` (mover la feature a "Hecho").
+6. Actualizar la documentación de la feature en el mismo commit: `spec.md` (Estado → Hecho ✅, criterios aceptados ✅), `plan.md` (Decisiones y Riesgos), `tasks.md` (checkmarks). Mover la feature a "Hecho" en `constitution/roadmap.md`.
