@@ -6,6 +6,12 @@
   <div class="mb-1">
     {{ form_row(form.codigo, { label_attr: { class: 'mb-1' }, attr: { class: 'form-control m-1' } }) }}
   </div>
-  <button type="submit" class="btn btn-dark m-2 p-2">Guardar</button>
-  <a class="btn btn-outline-secondary m-2 p-2" href="{{ path('app_tienda_index') }}">Cancelar</a>
+  <button type="submit" class="btn btn-dark m-2 p-2 d-inline-flex align-items-center gap-2">
+    {{ ux_icon('bi:check-lg') }}
+    <span>Guardar</span>
+  </button>
+  <a class="btn btn-outline-secondary m-2 p-2 d-inline-flex align-items-center gap-2" href="{{ path('app_tienda_index') }}">
+    {{ ux_icon('bi:x-lg') }}
+    <span>Cancelar</span>
+  </a>
 {{ form_end(form) }}

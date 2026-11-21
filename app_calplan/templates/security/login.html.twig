@@ -7,7 +7,10 @@
     <div class="col-md-8 col-lg-5">
         <div class="card shadow-sm">
             <div class="card-body">
-                <h1 class="h3 mb-4">Iniciar sesión</h1>
+                <h1 class="h3 mb-4 d-flex align-items-center gap-2">
+                    {{ ux_icon('bi:box-arrow-in-right') }}
+                    <span>Iniciar sesión</span>
+                </h1>
 
                 {% if error %}
                     <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
@@ -28,7 +31,10 @@
                     </div>
                     <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
 
-                    <button class="btn btn-dark btn-lg w-100 m-2 p-2" type="submit">Entrar</button>
+                    <button class="btn btn-dark btn-lg w-100 m-2 p-2 d-inline-flex align-items-center justify-content-center gap-2" type="submit">
+                        {{ ux_icon('bi:box-arrow-in-right') }}
+                        <span>Entrar</span>
+                    </button>
                 </form>
                 <p class="text-center text-body-secondary mt-3 mb-0">¿Sin cuenta? <a href="{{ path('app_register') }}">Regístrate</a></p>
             </div>
