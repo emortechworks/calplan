@@ -33,11 +33,11 @@ spec/
 Cada vez que se empiece un nuevo feature, se sigue este flujo:
 
 1. **Crear rama nueva** antes de tocar código: `git switch -c feature-NNN-nombre`
-   (`NNN` es el número de la feature según `constitution/roadmap.md`, ej. `feature-007-personal`).
+   (`NNN` es el número de la feature según `constitution/roadmap.md`, ej. `feature-007-roles`).
 2. **Implementar** dentro de esa rama.
 3. **Commit** de la feature.
 4. **Preguntar** por el push de la rama → si aprobas, pusheamos.
 5. **Preguntar** por el merge a `main` de la rama terminada → si aprobas, fusionamos.
 6. Las ramas terminadas se **mantienen** (no se borran).
 
-Hoy se continúa desde `main`; la siguiente feature (007 · Personal) arrancará con la rama nueva cuando se acelere.
+Hoy se continúa desde `main`; la siguiente feature (007 · Roles) arrancará con la rama nueva cuando se acelere.

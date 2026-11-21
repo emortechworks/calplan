@@ -11,14 +11,14 @@
 
 ## Siguiente 🔜
 
-- 007 · Personal — CRUD de personal del usuario: `nombre` completo, `horasSemanales` (default 48), `fechaNacimiento` y `finContrato` (opcionales), `activo` (borrado lógico) y asignación `ManyToMany` a 0 o más tiendas propias (sin `rol base`). Dependencias: `Tienda` (005).
+- 007 · Roles — catálogo ampliable de roles del usuario (p. ej. gerente titular, gerente suplente, encargado de área, otros; alta/edición/borrado lógico) del que se sirve el personal. Dependencias: `Autenticación` (004).
 
 ## Backlog / ideas 💡 (orden de dependencias)
 
-- 008 · Perfil del personal — catálogo configurable de atributos de cualidades por usuario (`escala` 1–5, `booleano`, `lista`, `numero`, `texto`; con `peso` 0–5, `orden`, borrado lógico y sugeridos iniciales: Velocidad, Fuerza, Puntualidad, Confiabilidad, Sexo) + valores opcionales por persona. Dependencias: `Personal` (007).
-- 009 · Roles y aptitudes — catálogo ampliable de roles y matriz "puede / no puede" por miembro del personal (único lugar donde se gestionan los roles). Dependencias: `Personal` (007).
-- 010 · Incidencias y peticiones — vacaciones, descanso semanal, cumpleaños, incapacidad, cursos, repuestos/apoyos; fecha + tipo + personal. Alimentan la contabilidad de horas a la semana. Dependencias: `Personal` (007).
-- 011 · Propuesta semanal — formulario (tienda + período + personal seleccionado) + generación usando pesos del perfil y reglas por día/tienda: días de trabajo/descanso, horario de comida cubierto por otro encargado de área, horas/semana menos incidencias y alertas de fin de contrato/cumpleaños. Dependencias: `Tienda` (005), `Personal` (007), `Perfil` (008), `Roles` (009), `Incidencias` (010).
+- 008 · Personal — CRUD de personal del usuario: `nombre` completo, `horasSemanales` (default 48), `fechaNacimiento` y `finContrato` (opcionales), `activo` (borrado lógico), asignación `ManyToMany` a 0 o más tiendas propias y aptitudes desde `Roles` (qué roles puede / no puede desempeñar). Dependencias: `Tienda` (005), `Roles` (007).
+- 009 · Perfil del personal — catálogo configurable de atributos de cualidades por usuario (`escala` 1–5, `booleano`, `lista`, `numero`, `texto`; con `peso` 0–5, `orden`, borrado lógico y sugeridos iniciales: Velocidad, Fuerza, Puntualidad, Confiabilidad, Sexo) + valores opcionales por persona. Dependencias: `Personal` (008).
+- 010 · Incidencias y peticiones — vacaciones, descanso semanal, cumpleaños, incapacidad, cursos, repuestos/apoyos; fecha + tipo + personal. Alimentan la contabilidad de horas a la semana. Dependencias: `Personal` (008).
+- 011 · Propuesta semanal — formulario (tienda + período + personal seleccionado) + generación usando pesos del perfil y reglas por día/tienda: días de trabajo/descanso, horario de comida cubierto por otro encargado de área, horas/semana menos incidencias y alertas de fin de contrato/cumpleaños. Dependencias: `Tienda` (005), `Roles` (007), `Personal` (008), `Perfil` (009), `Incidencias` (010).
 - 012 · Tabla semanal coloreada — vista de la propuesta coloreada por trabajador. Dependencias: `Propuesta semanal` (011).
 - 013 · Exportar / compartir — PDF / CSV / Sheets / Excel (decidir formato al llegar). Dependencias: `Propuesta semanal` (011) / `Tabla` (012).
 

@@ -22,12 +22,12 @@ _Modelo de datos del negocio. Entidades centrales, relaciones y reglas no obvias
   - `fechaNacimiento`: opcional (`nullable`); alimenta alertas/incidencias de cumpleaños.
   - `finContrato`: opcional (`nullable`); alerta de vencimiento durante la planeación semanal.
   - `activo`: borrado lógico (default `true`), igual que `Tienda`.
-- **Sin `rol base` fijo en `Personal`:** todos los roles y aptitudes se gestionan exclusivamente en `Rol / Asignación` (`009`).
-- **Perfil flexible:** cualidades descriptivas definibles por el usuario (`008`); no van en columnas fijas.
+- **Roles y aptitudes:** se sirve del catálogo ampliable de `Rol` (`007`) para indicar qué roles puede y cuáles no desempeñar (sin campo `rol base` fijo).
+- **Perfil flexible:** cualidades descriptivas definibles por el usuario (`009`); no van en columnas fijas.
 
 ### Rol / Asignación
-- Catálogo ampliable de roles desempeñables: gerente titular, gerente suplente, encargado de área, otros.
-- Por miembro del personal: qué roles **puede** y cuáles **no** desempeñar (algunos los hacen "no siempre"; algunos no pueden ciertos roles). Una misma persona puede cubrir varios según necesidad.
+- Catálogo ampliable de roles propiedad del `Usuario` (`007`): gerente titular, gerente suplente, encargado de área, otros (con borrado lógico).
+- Por miembro del personal (`008`): qué roles del catálogo **puede** y cuáles **no** desempeñar (algunos los hacen "no siempre"; algunos no pueden ciertos roles). Una misma persona puede cubrir varios según necesidad.
 
 ### Atributo de perfil (clave-valor)
 - Catálogo de atributos de cualidades propiedad del `Usuario` (compartido entre todas sus tiendas), con borrado lógico (`activo`) para no perder valores históricos.
