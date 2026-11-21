@@ -8,11 +8,23 @@
   {# Hero de presentación del proyecto; clases Bootstrap por defecto, sin CSS propio. #}
   <div class="p-5 mb-4 bg-body-tertiary rounded-3 text-center">
     <div class="container-fluid py-5">
+      {{ ux_icon('bi:calendar-week', { class: 'text-body-secondary mb-3', width: '3rem', height: '3rem' }) }}
       <h1 class="display-3 fw-bold">Planeación semanal para tienda</h1>
-      <p class="lead col-lg-8 mx-auto">Selecciona la tienda, la semana y el personal;</p>
-      <p class="lead col-lg-8 mx-auto">Selecciona roles, días de descanso y horario de comida;</p>
-      <p class="lead col-lg-8 mx-auto">Genera una propuesta de calendario semanal.</p>
       <hr class="my-4" />
+      <div class="row g-4 mt-2">
+        <div class="col-md-4">
+          <div class="mb-2">{{ ux_icon('bi:shop', { class: 'text-body-secondary', width: '2rem', height: '2rem' }) }}</div>
+          <p class="lead mb-0">Selecciona la tienda, la semana y el personal;</p>
+        </div>
+        <div class="col-md-4">
+          <div class="mb-2">{{ ux_icon('bi:people', { class: 'text-body-secondary', width: '2rem', height: '2rem' }) }}</div>
+          <p class="lead mb-0">Selecciona roles, días de descanso y horario de comida;</p>
+        </div>
+        <div class="col-md-4">
+          <div class="mb-2">{{ ux_icon('bi:calendar-check', { class: 'text-body-secondary', width: '2rem', height: '2rem' }) }}</div>
+          <p class="lead mb-0">Genera una propuesta de calendario semanal.</p>
+        </div>
+      </div>
     </div>
   </div>
 {% endblock %}

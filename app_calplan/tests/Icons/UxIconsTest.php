@@ -27,6 +27,20 @@ final class UxIconsTest extends WebTestCase
         self::assertStringNotContainsString('cdn.jsdelivr.net', $html);
     }
 
+    public function testSeccionesPrincipalesRenderizanIconosInlineSinCdn(): void
+    {
+        $client = static::createClient();
+
+        foreach (['/', '/login', '/registro'] as $ruta) {
+            $crawler = $client->request('GET', $ruta);
+            self::assertResponseIsSuccessful();
+            self::assertGreaterThan(1, $crawler->filter('svg')->count(), "La ruta {$ruta} debe renderizar múltiples íconos SVG inline.");
+
+            $html = (string) $client->getResponse()->getContent();
+            self::assertDoesNotMatchRegularExpression('/<(?:link|script|img)\b[^>]+(?:href|src)="https?:\/\//i', $html);
+        }
+    }
+
     public function testIconoNoImportadoFallaSinDescargaRemota(): void
     {
         static::createClient();
