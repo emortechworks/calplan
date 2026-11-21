@@ -8,34 +8,54 @@ _Modelo de datos del negocio. Entidades centrales, relaciones y reglas no obvias
 - Persona que accede al sistema. **Cualquiera en la red local puede registrarse**; no hay aprobación ni cuenta de administrador.
 - Se identifica por su **email** y guarda su contraseña con hash seguro. Rol único: `ROLE_USER`.
 - **Propiedad de datos (privacidad por cuenta):** cada usuario ve únicamente sus tiendas, su personal, sus incidencias y sus propuestas; no hay vista global ni datos compartidos entre usuarios.
-- Un `Usuario` tiene N `Tienda`; cada `Tienda` tiene N `Colaborador` (y por tanto el personal de cada tienda pertenece al mismo usuario).
+- Un `Usuario` tiene N `Tienda` y N `Personal`; cada `Personal` pertenece directamente a su `Usuario` y se vincula `ManyToMany` con 0, 1 o varias `Tienda` del mismo usuario.
 
 ### Tienda
-- Sucursal **propiedad de un usuario** donde se hace la planeación. Cada colaborador pertenece al menos a una; la propuesta se genera por tienda.
+- Sucursal **propiedad de un usuario** donde se hace la planeación. El personal puede asignarse a una o varias tiendas del mismo usuario; la propuesta se genera por tienda.
 
-### Colaborador (trabajador)
-- Persona asignable. Tipo/rol base: gerente titular, suplente, encargado de área u otros.
-- Pertenece a una tienda (y por tanto al usuario dueño de esa tienda); solo su propietario puede ver y asignarlo.
-- **Perfil flexible:** atributos clave-valor definibles por el usuario (sexo, velocidad, fuerza, puntualidad, confiabilidad, vencimiento de contrato, etc.). No van en columnas fijas; el catálogo lo arma el usuario.
+### Personal
+- Persona asignable, propiedad directa de un `Usuario` (solo su propietario puede verla y asignarla).
+- **Relación con tienda:** `ManyToMany` con `Tienda` (0, 1 o varias sucursales del mismo usuario; permite dar de alta sin bloquear si aún no tiene tienda asignada).
+- **Campos fijos operativos y de calendario:**
+  - `nombre`: nombre completo en un solo campo (obligatorio).
+  - `horasSemanales`: jornada semanal pactada en horas (entero obligatorio, default `48`).
+  - `fechaNacimiento`: opcional (`nullable`); alimenta alertas/incidencias de cumpleaños.
+  - `finContrato`: opcional (`nullable`); alerta de vencimiento durante la planeación semanal.
+  - `activo`: borrado lógico (default `true`), igual que `Tienda`.
+- **Sin `rol base` fijo en `Personal`:** todos los roles y aptitudes se gestionan exclusivamente en `Rol / Asignación` (`009`).
+- **Perfil flexible:** cualidades descriptivas definibles por el usuario (`008`); no van en columnas fijas.
 
 ### Rol / Asignación
-- Roles desempeñables: gerente titular, gerente suplente, encargado de área, otros (ampliable).
-- Por colaborador: qué roles **puede** y cuáles **no** desempeñar (algunos los hacen "no siempre"; algunos no pueden ciertos roles). Un mismo colaborador puede cubrir varios según necesidad.
+- Catálogo ampliable de roles desempeñables: gerente titular, gerente suplente, encargado de área, otros.
+- Por miembro del personal: qué roles **puede** y cuáles **no** desempeñar (algunos los hacen "no siempre"; algunos no pueden ciertos roles). Una misma persona puede cubrir varios según necesidad.
 
 ### Atributo de perfil (clave-valor)
-- Catálogo de atributos que el usuario define (nombre, tipo, opciones si aplica) y valores del colaborador por atributo.
+- Catálogo de atributos de cualidades propiedad del `Usuario` (compartido entre todas sus tiendas), con borrado lógico (`activo`) para no perder valores históricos.
+- Cada definición de atributo incluye:
+  - `nombre` (único por usuario).
+  - `tipo`: `escala` (1–5), `booleano` (Sí/No), `lista` (select con `opciones`), `numero` o `texto` corto. No se permite cambiar de `tipo` una vez tiene valores capturados.
+  - `opciones`: lista cerrada de valores (solo cuando `tipo = lista`).
+  - `peso`: importancia global para el algoritmo de propuesta semanal (`0` = solo informativo, `1–5` = prioridad; en `011` se complementa con reglas por día/tienda).
+  - `orden`: orden personalizable en pantalla.
+- **Valores por persona (`ValorPerfil`):** todos los atributos del perfil son **opcionales** al dar de alta o editar personal.
+- **Catálogo inicial sugerido** (editable/desactivable al crear cuenta o mediante acción "Cargar sugeridos"):
+  - `Velocidad` (`escala` 1–5, peso `3`)
+  - `Fuerza` (`escala` 1–5, peso `3`)
+  - `Puntualidad` (`escala` 1–5, peso `4`)
+  - `Confiabilidad` (`escala` 1–5, peso `5`)
+  - `Sexo` (`lista`: Femenino / Masculino / Otro, peso `0`)
 
 ### Período / intervalo de tiempo
-- La **semana calendario (lunes–domingo)** sobre la que se genera la propuesta; acota la contabilidad de horas (**48 h de ley**) y la tabla resultante.
+- La **semana calendario (lunes–domingo)** sobre la que se genera la propuesta; acota la contabilidad de horas (**48 h de ley** o las `horasSemanales` pactadas) y la tabla resultante.
 
 ### Incidencia / ausencia
 - Días que reducen la carga de la semana: vacaciones, descanso semanal, cumpleaños, incapacidad, curso, repuesto por apoyo, etc. Fecha + tipo; impactan las horas a la semana.
 
 ### Asignación diaria
-- Día concreto: fecha, colaborador, rol asignado, horario de comida y quién lo cubre (otro encargado de área). Regla: en ningún momento un área queda sin vigilar.
+- Día concreto: fecha, miembro del personal, rol asignado, horario de comida y quién lo cubre (otro encargado de área). Regla: en ningún momento un área queda sin vigilar.
 
 ### Propuesta semanal
-- Resultado agregado de la semana: tabla de la semana coloreada por trabajador, descargable/compartible.
+- Resultado agregado de la semana: tabla de la semana coloreada por trabajador, descargable/compartible. Utiliza los `peso` de los atributos del perfil y reglas configurables por día/tienda.
 
 ## Reglas no obvias
 

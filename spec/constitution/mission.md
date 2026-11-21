@@ -22,17 +22,17 @@ Un sitio web **local** que, a partir de un conjunto de formularios, permita:
 
 Con eso, generar una **propuesta semanal** de calendario con:
 
-- Asignación de días de trabajo y descanso por colaborador.
+- Asignación de días de trabajo y descanso por miembro del personal.
 - Asignación de roles/asignaciones según las necesidades de la tienda.
-- **Horario de comida diario** por colaborador, cubierto por **otro encargado de área** para que ninguna área quede sin vigilancia (debe haber varios colaboradores con ese rol para poder hacer esos movimientos).
+- **Horario de comida diario** por miembro del personal, cubierto por **otro encargado de área** para que ninguna área quede sin vigilancia (debe haber varias personas con ese rol para poder hacer esos movimientos).
 
-El personal se compone por ahora de (ampliables): **gerentes titulares, gerentes suplentes, encargados de área y otros**. Se selecciona de acuerdo a su **perfil**: sexo, velocidad, fuerza, puntualidad, si es persona confiable, si ya va a terminar su contrato, o **cualquier atributo que el usuario defina** (el catálogo de atributos es configurable).
+El personal puede desempeñar distintos roles (ampliables): **gerentes titulares, gerentes suplentes, encargados de área y otros**. Cada miembro del personal cuenta con datos operativos clave (horas semanales, fecha de nacimiento/cumpleaños y fin de contrato) y un **perfil de cualidades configurable** por el usuario (velocidad, fuerza, puntualidad, confiabilidad, sexo o cualquier atributo que defina, con peso de prioridad para la planeación).
 
-Cada personal debe cumplir un total de **48 horas de trabajo a la semana** (jornada semanal de ley), menos descansos e incidencias (vacaciones, día de cumpleaños, incapacidades y demás ausencias que apliquen por ley o política de la tienda).
+Cada miembro del personal debe cumplir su jornada semanal pactada (**48 horas de trabajo a la semana** por defecto, según ley), menos descansos e incidencias (vacaciones, día de cumpleaños, incapacidades y demás ausencias que apliquen por ley o política de la tienda).
 
 ## Para quién
 
-Es un sitio de ayuda a **gerentes de tienda** (y usuarios autorizados a crear su cuenta) que tienen varios colaboradores a su cargo y requieren hacer una planeación semanal de acuerdo a las necesidades del negocio. Cualquiera en la red local puede registrarse; cada usuario tiene sus propias tiendas y su propio personal.
+Es un sitio de ayuda a **gerentes de tienda** (y usuarios autorizados a crear su cuenta) que tienen personal a su cargo y requieren hacer una planeación semanal de acuerdo a las necesidades del negocio. Cualquiera en la red local puede registrarse; cada usuario tiene sus propias tiendas y su propio personal.
 
 ## Principios
 
