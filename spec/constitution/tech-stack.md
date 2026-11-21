@@ -4,7 +4,7 @@
 
 - **Lenguaje:** PHP 8.4 (imagen `php:8.4-cli`, imagen construida en `docker/php/Dockerfile`).
 - **Framework / runtime:** Symfony 8.1 (Flex, `8.1.*`) con Twig 3 y asset-mapper + Stimulus/Turbo (UX). Servidor de desarrollo: Symfony CLI embebido en el contenedor `php`, puerto `8000` (con `--allow-all-ip`).
-- **UI:** Bootstrap 5.3.9 (+ `@popperjs/core` 2.11.8), instalado y servido con `importmap:require` (archivos en `assets/vendor/...`, **sin CDN**).
+- **UI:** Bootstrap 5.3.9 (+ `@popperjs/core` 2.11.8), instalado y servido con `importmap:require` (archivos en `assets/vendor/...`, **sin CDN**); íconos con `symfony/ux-icons` (`^3.7`, pack Bootstrap Icons `bi:*` y cualquier SVG propio) servidos inline desde `assets/icons/` con `iconify.on_demand: false` (**sin CDN ni peticiones externas en runtime**).
 - **Base de datos:** MySQL 8.4 (contenedor `mysql`, servicio `mysql`), base `calplan_db` con usuario dedicado para la app. Doctrine ORM 3.7 + Doctrine Migrations. Conexión desde la app vía `mysql` (nombre del servicio en la red Docker).
 - **Tests:** PHPUnit 13.4 (+ BrowserKit / css-selector) configurado en `phpunit.dist.xml`; `tests/` existe pero está vacío — aún no hay casos. Cada feature debe cubrir sus pruebas (WebTestCase / KernelTestCase) antes de darla por terminada.
 - **Convenciones de pruebas (gotchas frecuentes):**
@@ -21,7 +21,7 @@
 - `app_calplan/src/Kernel.php`, `src/Controller/`, `src/Entity/`, `src/Repository/` — código del dominio/controladores (PSR-4 `App\`).
 - `app_calplan/config/packages/` y `config/routes*` — configuración por bundle y routing (mensajes, framework, security, doctrine...).
 - `app_calplan/templates/` — vistas Twig.
-- `app_calplan/assets/` — frontend con asset-mapper (JS/CSS/Stimulus; sin bundler npm externo).
+- `app_calplan/assets/` — frontend con asset-mapper (JS/CSS/Stimulus; sin bundler npm externo) e íconos SVG locales versionados en `assets/icons/` (UX Icons).
 - `app_calplan/migrations/` — migraciones Doctrine (esquema solo por migraciones).
 - `app_calplan/public/index.php` — front controller.
 - `.env` raíz (git-ignored, `PROJECT_NAME`, `APP_DIR`, `MYSQL_*`) · `app_calplan/.env` (versionado, defaults) · `app_calplan/.env.local` (git-ignored, secretos reales, p. ej. `DATABASE_URL`).
@@ -36,6 +36,7 @@ Todos vía Docker (no hay PHP/Composer/MySQL en el host). Sustituir `<PROJECT_NA
 - Consola / SQL: `docker exec -w /var/www/html/app_calplan <PROJECT_NAME>-php-1 php bin/console <comando>` (p. ej. `dbal:run-sql "SELECT 1"`)
 - Tests: `docker compose exec -w /var/www/html/app_calplan php php bin/phpunit` (requiere la base `calplan_db_test`: `doctrine:database:create --if-not-exists --env=test`)
 - Instalar paquetes JS/CSS con importmap (auto-hospedados): `php bin/console importmap:require <paquete>`
+- Importar íconos locales de Bootstrap (UX Icons): `php bin/console ux:icons:import bi:<nombre>` (o `php bin/console ux:icons:lock` para bajar todos los referenciados en Twig) — commitear los `.svg` generados en `assets/icons/`.
 - Lint: no hay php-cs-fixer/linting configurado aún; validación manual según las reglas de estilo de abajo.
 - Migraciones: `php bin/console make:migration` → `doctrine:migrations:migrate` (nunca `doctrine:schema:update`).
 
@@ -52,7 +53,7 @@ El modelo del dominio está documentado en [dominio.md](dominio.md). Aún no hay
 - Validación de entrada en el borde (formularios/Constraints), nunca confiar en el cliente; errores de dominio → flash + redirect.
 - Tests en `tests/` con sufijo `*Test.php`, namespace `App\Tests\`; WebTestCase para HTTP, KernelTestCase para servicios.
 - Idiomas: identificadores y código en inglés; contenido visible al usuario, documentación y mensajes de dominio en español.
-- Assets: asset-mapper/importmap; no añadir bundlers npm externos por ahora.
+- Assets: asset-mapper/importmap; no añadir bundlers npm externos por ahora. Íconos vía `{{ ux_icon('bi:...') }}` importados localmente en `assets/icons/` (nunca `iconify.on_demand: true`).
 - Commits: mensajes breves y concretos en español; LF en los archivos (`.gitattributes`, `.editorconfig`).
 
 ## Estilo visual
