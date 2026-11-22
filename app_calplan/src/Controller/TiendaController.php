@@ -37,12 +37,17 @@ class TiendaController extends AbstractController
     #[Route('/nueva', name: 'app_tienda_nueva', methods: ['GET', 'POST'])]
     public function nueva(Request $request, EntityManagerInterface $entityManager): Response
     {
+        /** @var User $usuario */
+        $usuario = $this->getUser();
         $tienda = new Tienda();
-        $form = $this->createForm(TiendaType::class, $tienda);
+        $form = $this->createForm(TiendaType::class, $tienda, [
+            'usuario' => $usuario,
+            'tienda' => $tienda,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $tienda->setUsuario($this->getUser());
+            $tienda->setUsuario($usuario);
             if ($this->intentarGuardar($form, $tienda, null, $entityManager, 'creada')) {
                 return $this->redirectToRoute('app_tienda_index');
             }
@@ -58,7 +63,12 @@ class TiendaController extends AbstractController
     {
         $this->denegarSiNoEsPropia($tienda);
 
-        $form = $this->createForm(TiendaType::class, $tienda);
+        /** @var User $usuario */
+        $usuario = $this->getUser();
+        $form = $this->createForm(TiendaType::class, $tienda, [
+            'usuario' => $usuario,
+            'tienda' => $tienda,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

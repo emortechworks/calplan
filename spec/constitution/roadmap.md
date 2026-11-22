@@ -11,17 +11,18 @@
 - [007 · Roles](features/007-roles/) — CRUD del catálogo de roles del usuario (`nombre` único por usuario, `descripcion` opcional, `activo` borrado lógico), enlace en navbar + tests ([spec](features/007-roles/spec.md))
 - [008 · Regla de dependencias en el spec](features/008-regla-dependencias/) — fija la verificación y reordenamiento automático de features por dependencias en `spec/README.md`, `roadmap.md` y `spec_template/` ([spec](features/008-regla-dependencias/spec.md))
 - [009 · Personal](features/009-personal/) — CRUD de personal del usuario (`nombre`, `horasSemanales`, `fechaNacimiento`, `finContrato`, `activo`), `ManyToMany` con tiendas (`btn-check`), roles ordenados por prioridad (`PersonalRol` + Stimulus), filtro por tienda + tests ([spec](features/009-personal/spec.md))
+- [010 · Roles por tienda](features/010-roles-por-tienda/) — relación `ManyToMany` `Tienda ↔ Rol` (`tienda_rol`) con chips `btn-check` en `/tiendas` y prioridades de rol separadas por tienda en `/personal` (`PersonalRol` con `tienda_id` + paneles dinámicos Stimulus) + tests ([spec](features/010-roles-por-tienda/spec.md))
 
 ## Siguiente 🔜
 
-- 010 · Perfil del personal — catálogo configurable de atributos de cualidades por usuario (`escala` 1–5, `booleano`, `lista`, `numero`, `texto`; con `peso` 0–5, `orden`, borrado lógico y sugeridos iniciales: Velocidad, Fuerza, Puntualidad, Confiabilidad, Sexo) + valores opcionales por persona. Dependencias: `Personal` (009).
+- 011 · Perfil del personal — catálogo configurable de atributos de cualidades por usuario (`escala` 1–5, `booleano`, `lista`, `numero`, `texto`; con `peso` 0–5, `orden`, borrado lógico y sugeridos iniciales: Velocidad, Fuerza, Puntualidad, Confiabilidad, Sexo) + valores opcionales por persona. Dependencias: `Personal` (009).
 
 ## Backlog / ideas 💡 (orden de dependencias)
 
-- 011 · Incidencias y peticiones — vacaciones, descanso semanal, cumpleaños, incapacidad, cursos, repuestos/apoyos; fecha + tipo + personal. Alimentan la contabilidad de horas a la semana. Dependencias: `Personal` (009).
-- 012 · Propuesta semanal — formulario (tienda + período + personal seleccionado) + generación usando pesos del perfil, prioridades de rol y reglas por día/tienda: días de trabajo/descanso, horario de comida cubierto por otro encargado de área, horas/semana menos incidencias y alertas de fin de contrato/cumpleaños. Dependencias: `Tienda` (005), `Roles` (007), `Personal` (009), `Perfil` (010), `Incidencias` (011).
-- 013 · Tabla semanal coloreada — vista de la propuesta coloreada por trabajador. Dependencias: `Propuesta semanal` (012).
-- 014 · Exportar / compartir — PDF / CSV / Sheets / Excel (decidir formato al llegar). Dependencias: `Propuesta semanal` (012) / `Tabla` (013).
+- 012 · Incidencias y peticiones — vacaciones, descanso semanal, cumpleaños, incapacidad, cursos, repuestos/apoyos; fecha + tipo + personal. Alimentan la contabilidad de horas a la semana. Dependencias: `Personal` (009).
+- 013 · Propuesta semanal — formulario (tienda + período + personal seleccionado) + generación usando pesos del perfil, prioridades de rol por tienda y reglas por día/tienda: días de trabajo/descanso, horario de comida cubierto por otro encargado de área, horas/semana menos incidencias y alertas de fin de contrato/cumpleaños. Dependencias: `Tienda` (005), `Roles` (007), `Personal` (009), `Roles por tienda` (010), `Perfil` (011), `Incidencias` (012).
+- 014 · Tabla semanal coloreada — vista de la propuesta coloreada por trabajador. Dependencias: `Propuesta semanal` (013).
+- 015 · Exportar / compartir — PDF / CSV / Sheets / Excel (decidir formato al llegar). Dependencias: `Propuesta semanal` (013) / `Tabla` (014).
 
 > Cada feature nueva se crea como `features/NNN-nombre-feature/` con `spec.md`, `plan.md` y `tasks.md` antes de tocar código.
 > **Regla de dependencias:** toda feature solo puede depender de números menores ya en **Hecho ✅**. Si al planear un incremento se detecta una dependencia pendiente posterior, primero se reordena y renumera el backlog (nunca lo ya en **Hecho ✅**) para implementar antes el prerrequisito.

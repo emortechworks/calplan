@@ -43,11 +43,11 @@ Antes de iniciar cualquier feature (o al incorporar una nueva al backlog), se id
 Cada vez que se empiece un nuevo feature, se sigue este flujo:
 
 1. **Crear rama nueva** antes de tocar código: `git switch -c feature-NNN-nombre`
-   (`NNN` es el número de la feature según `constitution/roadmap.md`, ej. `feature-010-perfil-personal`).
+   (`NNN` es el número de la feature según `constitution/roadmap.md`, ej. `feature-011-perfil-personal`).
 2. **Implementar** dentro de esa rama.
 3. **Commit** de la feature.
 4. **Preguntar** por el push de la rama → si aprobas, pusheamos.
 5. **Preguntar** por el merge a `main` de la rama terminada → si aprobas, fusionamos.
 6. Las ramas terminadas se **mantienen** (no se borran).
 
-Hoy se continúa desde `main`; la siguiente feature (010 · Perfil del personal) arrancará con la rama nueva cuando se acelere.
+Hoy se continúa desde `main`; la siguiente feature (011 · Perfil del personal) arrancará con la rama nueva cuando se acelere.

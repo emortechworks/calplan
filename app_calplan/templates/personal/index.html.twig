@@ -54,23 +54,21 @@
         </div>
 
         {% if persona.tiendas|length > 0 %}
-          <div class="d-flex flex-wrap gap-1 mt-2">
+          <div class="d-flex flex-column gap-1 mt-2">
             {% for tienda in persona.tiendas %}
-              <span class="badge text-bg-light border text-secondary d-inline-flex align-items-center gap-1">
-                {{ ux_icon('bi:shop') }}
-                <span>{{ tienda.nombre }}</span>
-              </span>
-            {% endfor %}
-          </div>
-        {% endif %}
-
-        {% if persona.personalRoles|length > 0 %}
-          <div class="d-flex flex-wrap gap-1 mt-2">
-            {% for asignacion in persona.personalRoles %}
-              <span class="badge {{ asignacion.prioridad == 1 ? 'text-bg-dark' : 'text-bg-secondary' }} d-inline-flex align-items-center gap-1">
-                <span>#{{ asignacion.prioridad }}</span>
-                <span>{{ asignacion.rol.nombre }}</span>
-              </span>
+              {% set rolesTienda = persona.rolesDeTienda(tienda) %}
+              <div class="d-flex flex-wrap align-items-center gap-1">
+                <span class="badge text-bg-light border text-secondary d-inline-flex align-items-center gap-1">
+                  {{ ux_icon('bi:shop') }}
+                  <span>{{ tienda.nombre }}</span>
+                </span>
+                {% for asignacion in rolesTienda %}
+                  <span class="badge {{ asignacion.prioridad == 1 ? 'text-bg-dark' : 'text-bg-secondary' }} d-inline-flex align-items-center gap-1">
+                    <span>#{{ asignacion.prioridad }}</span>
+                    <span>{{ asignacion.rol.nombre }}</span>
+                  </span>
+                {% endfor %}
+              </div>
             {% endfor %}
           </div>
         {% endif %}

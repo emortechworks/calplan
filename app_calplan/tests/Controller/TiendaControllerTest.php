@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\Rol;
 use App\Entity\Tienda;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,6 +38,20 @@ final class TiendaControllerTest extends WebTestCase
         $entityManager->flush();
 
         return $tienda;
+    }
+
+    private function crearRol(User $usuario, string $nombre, bool $activo = true): Rol
+    {
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+
+        $rol = new Rol();
+        $rol->setUsuario($usuario);
+        $rol->setNombre($nombre);
+        $rol->setActivo($activo);
+        $entityManager->persist($rol);
+        $entityManager->flush();
+
+        return $rol;
     }
 
     private function login(KernelBrowser $client, string $email): void
@@ -166,6 +181,36 @@ final class TiendaControllerTest extends WebTestCase
         $client->request('POST', '/tiendas/'.$tienda->getId().'/alternar', ['_token' => $this->tokenDeListado($client)]);
         self::assertResponseRedirects('/tiendas');
         self::assertEquals(1, $connection->fetchOne('SELECT activa FROM tienda WHERE id = ?', [$tienda->getId()]));
+    }
+
+    public function testAsignarYEditarRolesEnTienda(): void
+    {
+        $client = static::createClient();
+        $usuario = $this->crearUsuario($this->uniqueEmail('tienda_roles'));
+        $rolA = $this->crearRol($usuario, 'Cajero');
+        $rolB = $this->crearRol($usuario, 'Panadero');
+        $connection = static::getContainer()->get(EntityManagerInterface::class)->getConnection();
+
+        $this->login($client, $usuario->getEmail());
+
+        $crawler = $client->request('GET', '/tiendas/nueva');
+        self::assertResponseIsSuccessful();
+        $form = $crawler->selectButton('Guardar')->form();
+        $form['tienda[nombre]'] = 'Sucursal Con Roles';
+        $form['tienda[roles]'][0]->tick();
+        $form['tienda[roles]'][1]->tick();
+        $client->submit($form);
+
+        self::assertResponseRedirects('/tiendas');
+        $client->followRedirect();
+        $html = (string) $client->getResponse()->getContent();
+        self::assertStringContainsString('Sucursal Con Roles', $html);
+        self::assertStringContainsString('Cajero', $html);
+        self::assertStringContainsString('Panadero', $html);
+
+        $tiendaId = (int) $connection->fetchOne('SELECT id FROM tienda WHERE usuario_id = ? AND nombre = ?', [$usuario->getId(), 'Sucursal Con Roles']);
+        $rolesGuardados = $connection->fetchFirstColumn('SELECT rol_id FROM tienda_rol WHERE tienda_id = ?', [$tiendaId]);
+        self::assertEqualsCanonicalizing([$rolA->getId(), $rolB->getId()], array_map('intval', $rolesGuardados));
     }
 
     /**

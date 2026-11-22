@@ -23,10 +23,12 @@ class TiendaRepository extends ServiceEntityRepository
     public function delUsuario(User $usuario): array
     {
         return $this->createQueryBuilder('t')
+            ->leftJoin('t.roles', 'r')->addSelect('r')
             ->andWhere('t.usuario = :usuario')
             ->setParameter('usuario', $usuario)
             ->orderBy('t.activa', 'DESC')
             ->addOrderBy('t.nombre', 'ASC')
+            ->addOrderBy('r.nombre', 'ASC')
             ->getQuery()
             ->getResult();
     }

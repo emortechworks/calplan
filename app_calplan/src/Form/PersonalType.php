@@ -92,10 +92,10 @@ class PersonalType extends AbstractType
                     return $qb;
                 },
             ])
-            ->add('rolesOrdenados', HiddenType::class, [
+            ->add('rolesPorTienda', HiddenType::class, [
                 'mapped' => false,
                 'required' => false,
-                'data' => implode(',', $personal->getRolesOrdenadosIds()),
+                'data' => json_encode($personal->getRolesOrdenadosPorTiendaIds(), \JSON_FORCE_OBJECT),
             ])
         ;
     }

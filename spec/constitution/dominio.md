@@ -11,7 +11,7 @@ _Modelo de datos del negocio. Entidades centrales, relaciones y reglas no obvias
 - Un `Usuario` tiene N `Tienda` y N `Personal`; cada `Personal` pertenece directamente a su `Usuario` y se vincula `ManyToMany` con 0, 1 o varias `Tienda` del mismo usuario.
 
 ### Tienda
-- Sucursal **propiedad de un usuario** donde se hace la planeación. El personal puede asignarse a una o varias tiendas del mismo usuario; la propuesta se genera por tienda.
+- Sucursal **propiedad de un usuario** donde se hace la planeación. Define qué roles del catálogo del usuario existen en esa sucursal (`ManyToMany` `tienda_rol`, `010`). El personal puede asignarse a una o varias tiendas del mismo usuario; la propuesta se genera por tienda.
 
 ### Personal
 - Persona asignable, propiedad directa de un `Usuario` (solo su propietario puede verla y asignarla).
@@ -22,12 +22,12 @@ _Modelo de datos del negocio. Entidades centrales, relaciones y reglas no obvias
   - `fechaNacimiento`: opcional (`nullable`); alimenta alertas/incidencias de cumpleaños.
   - `finContrato`: opcional (`nullable`); alerta de vencimiento durante la planeación semanal.
   - `activo`: borrado lógico (default `true`), igual que `Tienda`.
-- **Roles y aptitudes:** se sirve del catálogo ampliable de `Rol` (`007`) mediante asignación ordenada con prioridad/peso (`PersonalRol`, `#1` = mayor peso / rol principal, `#2`, `#3`… secundarios; roles ausentes = no los desempeña).
-- **Perfil flexible:** cualidades descriptivas definibles por el usuario (`010`); no van en columnas fijas.
+- **Roles y aptitudes por tienda:** se sirve de los roles habilitados en cada `Tienda` (`010`) mediante asignación ordenada por sucursal (`PersonalRol(personal, tienda, rol, prioridad)`, `#1` = mayor peso / rol principal en esa tienda, `#2`, `#3`… secundarios; roles ausentes = no los desempeña en esa tienda).
+- **Perfil flexible:** cualidades descriptivas definibles por el usuario (`011`); no van en columnas fijas.
 
 ### Rol / Asignación
-- Catálogo ampliable de roles propiedad del `Usuario` (`007`): `nombre` único por usuario, `descripcion` opcional y `activo` (borrado lógico).
-- Por miembro del personal (`009`): relación ordenada con `Rol` (`PersonalRol` con `prioridad` `1, 2, 3…`, donde `#1` tiene el mayor peso y los siguientes pesos decrecientes); los roles ausentes son los que no desempeña.
+- Catálogo ampliable de roles propiedad del `Usuario` (`007`): `nombre` único por usuario, `descripcion` opcional y `activo` (borrado lógico). Cada `Tienda` selecciona qué roles de este catálogo existen en ella (`tienda_rol`, `010`).
+- Por miembro del personal y por tienda (`009` / `010`): relación ordenada con `Rol` (`PersonalRol` con `(personal_id, tienda_id, rol_id, prioridad)`, donde `#1` tiene el mayor peso dentro de esa sucursal); los roles ausentes son los que no desempeña en esa tienda.
 
 ### Atributo de perfil (clave-valor)
 - Catálogo de atributos de cualidades propiedad del `Usuario` (compartido entre todas sus tiendas), con borrado lógico (`activo`) para no perder valores históricos.
@@ -35,7 +35,7 @@ _Modelo de datos del negocio. Entidades centrales, relaciones y reglas no obvias
   - `nombre` (único por usuario).
   - `tipo`: `escala` (1–5), `booleano` (Sí/No), `lista` (select con `opciones`), `numero` o `texto` corto. No se permite cambiar de `tipo` una vez tiene valores capturados.
   - `opciones`: lista cerrada de valores (solo cuando `tipo = lista`).
-  - `peso`: importancia global para el algoritmo de propuesta semanal (`0` = solo informativo, `1–5` = prioridad; en `012` se complementa con reglas por día/tienda).
+  - `peso`: importancia global para el algoritmo de propuesta semanal (`0` = solo informativo, `1–5` = prioridad; en `013` se complementa con reglas por día/tienda).
   - `orden`: orden personalizable en pantalla.
 - **Valores por persona (`ValorPerfil`):** todos los atributos del perfil son **opcionales** al dar de alta o editar personal.
 - **Catálogo inicial sugerido** (editable/desactivable al crear cuenta o mediante acción "Cargar sugeridos"):

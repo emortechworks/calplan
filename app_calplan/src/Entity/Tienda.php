@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TiendaRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -30,11 +32,24 @@ class Tienda
     #[ORM\Column]
     private bool $activa = true;
 
+    /**
+     * @var Collection<int, Rol>
+     */
+    #[ORM\ManyToMany(targetEntity: Rol::class)]
+    #[ORM\JoinTable(name: 'tienda_rol')]
+    #[ORM\OrderBy(['nombre' => 'ASC'])]
+    private Collection $roles;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updatedAt = null;
+
+    public function __construct()
+    {
+        $this->roles = new ArrayCollection();
+    }
 
     #[ORM\PrePersist]
     public function marcarCreada(): void
@@ -98,6 +113,30 @@ class Tienda
     public function setActiva(bool $activa): static
     {
         $this->activa = $activa;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Rol>
+     */
+    public function getRoles(): Collection
+    {
+        return $this->roles;
+    }
+
+    public function addRol(Rol $rol): static
+    {
+        if (!$this->roles->contains($rol)) {
+            $this->roles->add($rol);
+        }
+
+        return $this;
+    }
+
+    public function removeRol(Rol $rol): static
+    {
+        $this->roles->removeElement($rol);
 
         return $this;
     }

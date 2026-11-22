@@ -26,6 +26,7 @@ class PersonalRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.tiendas', 't')->addSelect('t')
             ->leftJoin('p.personalRoles', 'pr')->addSelect('pr')
+            ->leftJoin('pr.tienda', 'prt')->addSelect('prt')
             ->leftJoin('pr.rol', 'r')->addSelect('r')
             ->andWhere('p.usuario = :usuario')
             ->setParameter('usuario', $usuario)

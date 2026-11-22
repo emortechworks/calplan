@@ -185,62 +185,94 @@ class Personal
     }
 
     /**
-     * Sincroniza los roles asignados actualizando prioridades en sitio para evitar
-     * colisiones en UNIQ_PERSONAL_ROL durante un único flush() de Doctrine.
+     * Sincroniza los roles por tienda actualizando prioridades en sitio para evitar
+     * colisiones en UNIQ_PERSONAL_TIENDA_ROL durante un único flush() de Doctrine.
      *
-     * @param list<Rol> $rolesOrdenados
+     * @param list<array{tienda: Tienda, roles: list<Rol>}> $rolesPorTienda
      */
-    public function reemplazarRolesEnOrden(array $rolesOrdenados): void
+    public function reemplazarRolesPorTienda(array $rolesPorTienda): void
     {
-        $existentesPorRolId = [];
+        $existentesPorClave = [];
         foreach ($this->personalRoles as $personalRol) {
+            $tiendaId = $personalRol->getTienda()->getId();
             $rolId = $personalRol->getRol()->getId();
-            if ($rolId !== null) {
-                $existentesPorRolId[$rolId] = $personalRol;
+            if ($tiendaId !== null && $rolId !== null) {
+                $existentesPorClave[$tiendaId.':'.$rolId] = $personalRol;
             }
         }
 
         $conservados = [];
-        $prioridad = 1;
-        foreach ($rolesOrdenados as $rol) {
-            $rolId = $rol->getId();
-            if ($rolId === null || isset($conservados[$rolId])) {
+        foreach ($rolesPorTienda as $grupo) {
+            $tienda = $grupo['tienda'];
+            $tiendaId = $tienda->getId();
+            if ($tiendaId === null) {
                 continue;
             }
 
-            $conservados[$rolId] = true;
-            if (isset($existentesPorRolId[$rolId])) {
-                $existentesPorRolId[$rolId]->setPrioridad($prioridad);
-            } else {
-                $this->personalRoles->add(new PersonalRol($this, $rol, $prioridad));
+            $prioridad = 1;
+            foreach ($grupo['roles'] as $rol) {
+                $rolId = $rol->getId();
+                if ($rolId === null) {
+                    continue;
+                }
+
+                $clave = $tiendaId.':'.$rolId;
+                if (isset($conservados[$clave])) {
+                    continue;
+                }
+
+                $conservados[$clave] = true;
+                if (isset($existentesPorClave[$clave])) {
+                    $existentesPorClave[$clave]->setPrioridad($prioridad);
+                } else {
+                    $this->personalRoles->add(new PersonalRol($this, $tienda, $rol, $prioridad));
+                }
+                ++$prioridad;
             }
-            ++$prioridad;
         }
 
-        foreach ($existentesPorRolId as $rolId => $personalRol) {
-            if (!isset($conservados[$rolId])) {
+        foreach ($existentesPorClave as $clave => $personalRol) {
+            if (!isset($conservados[$clave])) {
                 $this->personalRoles->removeElement($personalRol);
             }
         }
     }
 
     /**
-     * @return list<int>
+     * @return array<int, list<int>> mapa tiendaId => lista ordenada de rolIds por prioridad
      */
-    public function getRolesOrdenadosIds(): array
+    public function getRolesOrdenadosPorTiendaIds(): array
     {
         $asignaciones = $this->personalRoles->toArray();
         usort($asignaciones, static fn (PersonalRol $a, PersonalRol $b): int => $a->getPrioridad() <=> $b->getPrioridad());
 
-        $ids = [];
+        $mapa = [];
         foreach ($asignaciones as $asignacion) {
+            $tiendaId = $asignacion->getTienda()->getId();
             $rolId = $asignacion->getRol()->getId();
-            if ($rolId !== null) {
-                $ids[] = $rolId;
+            if ($tiendaId !== null && $rolId !== null) {
+                $mapa[$tiendaId][] = $rolId;
             }
         }
 
-        return $ids;
+        return $mapa;
+    }
+
+    /**
+     * @return list<PersonalRol>
+     */
+    public function getRolesDeTienda(Tienda $tienda): array
+    {
+        $resultado = [];
+        foreach ($this->personalRoles as $asignacion) {
+            if ($asignacion->getTienda()->getId() === $tienda->getId()) {
+                $resultado[] = $asignacion;
+            }
+        }
+
+        usort($resultado, static fn (PersonalRol $a, PersonalRol $b): int => $a->getPrioridad() <=> $b->getPrioridad());
+
+        return $resultado;
     }
 
     public function getCreatedAt(): ?\DateTimeInterface
