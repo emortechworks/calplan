@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'personal_rol')]
-#[ORM\UniqueConstraint(name: 'UNIQ_PERSONAL_TIENDA_ROL', columns: ['personal_id', 'tienda_id', 'rol_id'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_PERSONAL_SUCURSAL_ROL', columns: ['personal_id', 'sucursal_id', 'rol_id'])]
 class PersonalRol
 {
     #[ORM\Id]
@@ -21,22 +21,22 @@ class PersonalRol
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private Tienda $tienda;
+    private Sucursal $sucursal;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private Rol $rol;
 
     /**
-     * 1 representa el mayor peso (rol principal dentro de esa tienda); valores mayores indican menor prioridad.
+     * 1 representa el mayor peso (rol principal dentro de esa sucursal); valores mayores indican menor prioridad.
      */
     #[ORM\Column(type: Types::SMALLINT)]
     private int $prioridad;
 
-    public function __construct(Personal $personal, Tienda $tienda, Rol $rol, int $prioridad)
+    public function __construct(Personal $personal, Sucursal $sucursal, Rol $rol, int $prioridad)
     {
         $this->personal = $personal;
-        $this->tienda = $tienda;
+        $this->sucursal = $sucursal;
         $this->rol = $rol;
         $this->prioridad = $prioridad;
     }
@@ -51,9 +51,9 @@ class PersonalRol
         return $this->personal;
     }
 
-    public function getTienda(): Tienda
+    public function getSucursal(): Sucursal
     {
-        return $this->tienda;
+        return $this->sucursal;
     }
 
     public function getRol(): Rol

@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Rol;
-use App\Entity\Tienda;
+use App\Entity\Sucursal;
 use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -15,17 +15,17 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class TiendaType extends AbstractType
+class SucursalType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         /** @var User $usuario */
         $usuario = $options['usuario'];
-        /** @var Tienda $tienda */
-        $tienda = $options['tienda'];
+        /** @var Sucursal $sucursal */
+        $sucursal = $options['sucursal'];
 
         $rolesAsignadosIds = [];
-        foreach ($tienda->getRoles() as $rol) {
+        foreach ($sucursal->getRoles() as $rol) {
             if ($rol->getId() !== null) {
                 $rolesAsignadosIds[] = $rol->getId();
             }
@@ -38,7 +38,7 @@ class TiendaType extends AbstractType
                     new NotBlank(message: 'El nombre es obligatorio.'),
                     new Length(max: 120, maxMessage: 'El nombre no puede pasar de {{ limit }} caracteres.'),
                 ],
-                'attr' => ['placeholder' => 'Tienda Centro'],
+                'attr' => ['placeholder' => 'Sucursal Centro'],
             ])
             ->add('codigo', TextType::class, [
                 'label' => 'Código (opcional)',
@@ -46,18 +46,18 @@ class TiendaType extends AbstractType
                 'constraints' => [
                     new Length(max: 30, maxMessage: 'El código no puede pasar de {{ limit }} caracteres.'),
                 ],
-                'attr' => ['placeholder' => 'T-001'],
+                'attr' => ['placeholder' => 'S-001'],
             ])
             ->add('roles', EntityType::class, [
                 'class' => Rol::class,
-                'label' => 'Roles disponibles en esta tienda',
+                'label' => 'Roles disponibles en esta sucursal',
                 'multiple' => true,
                 'expanded' => true,
                 'required' => false,
                 'choice_label' => static fn (Rol $rol): string => $rol->isActivo()
                     ? (string) $rol->getNombre()
                     : $rol->getNombre().' (desactivado)',
-                // Incluye roles activos del usuario y los ya asignados a esta tienda aunque hayan sido desactivados.
+                // Incluye roles activos del usuario y los ya asignados a esta sucursal aunque hayan sido desactivados.
                 'query_builder' => static function (EntityRepository $er) use ($usuario, $rolesAsignadosIds): QueryBuilder {
                     $qb = $er->createQueryBuilder('r')
                         ->andWhere('r.usuario = :usuario')
@@ -81,10 +81,10 @@ class TiendaType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Tienda::class,
+            'data_class' => Sucursal::class,
         ]);
-        $resolver->setRequired(['usuario', 'tienda']);
+        $resolver->setRequired(['usuario', 'sucursal']);
         $resolver->setAllowedTypes('usuario', User::class);
-        $resolver->setAllowedTypes('tienda', Tienda::class);
+        $resolver->setAllowedTypes('sucursal', Sucursal::class);
     }
 }

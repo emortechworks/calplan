@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Personal;
-use App\Entity\Tienda;
+use App\Entity\Sucursal;
 use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -29,10 +29,10 @@ class PersonalType extends AbstractType
         /** @var Personal $personal */
         $personal = $options['personal'];
 
-        $tiendasAsignadasIds = [];
-        foreach ($personal->getTiendas() as $tienda) {
-            if ($tienda->getId() !== null) {
-                $tiendasAsignadasIds[] = $tienda->getId();
+        $sucursalesAsignadasIds = [];
+        foreach ($personal->getSucursales() as $sucursal) {
+            if ($sucursal->getId() !== null) {
+                $sucursalesAsignadasIds[] = $sucursal->getId();
             }
         }
 
@@ -65,37 +65,37 @@ class PersonalType extends AbstractType
                 'input' => 'datetime_immutable',
                 'required' => false,
             ])
-            ->add('tiendas', EntityType::class, [
-                'class' => Tienda::class,
-                'label' => 'Tiendas asignadas',
+            ->add('sucursales', EntityType::class, [
+                'class' => Sucursal::class,
+                'label' => 'Sucursales asignadas',
                 'multiple' => true,
                 'expanded' => true,
                 'required' => false,
-                'choice_label' => static fn (Tienda $tienda): string => $tienda->isActiva()
-                    ? (string) $tienda->getNombre()
-                    : $tienda->getNombre().' (desactivada)',
-                // Incluye tiendas activas del usuario y las ya asignadas aunque hayan sido desactivadas.
-                'query_builder' => static function (EntityRepository $er) use ($usuario, $tiendasAsignadasIds): QueryBuilder {
-                    $qb = $er->createQueryBuilder('t')
-                        ->andWhere('t.usuario = :usuario')
+                'choice_label' => static fn (Sucursal $sucursal): string => $sucursal->isActiva()
+                    ? (string) $sucursal->getNombre()
+                    : $sucursal->getNombre().' (desactivada)',
+                // Incluye sucursales activas del usuario y las ya asignadas aunque hayan sido desactivadas.
+                'query_builder' => static function (EntityRepository $er) use ($usuario, $sucursalesAsignadasIds): QueryBuilder {
+                    $qb = $er->createQueryBuilder('s')
+                        ->andWhere('s.usuario = :usuario')
                         ->setParameter('usuario', $usuario)
-                        ->orderBy('t.activa', 'DESC')
-                        ->addOrderBy('t.nombre', 'ASC');
+                        ->orderBy('s.activa', 'DESC')
+                        ->addOrderBy('s.nombre', 'ASC');
 
-                    if ($tiendasAsignadasIds !== []) {
-                        $qb->andWhere('t.activa = true OR t.id IN (:asignadas)')
-                            ->setParameter('asignadas', $tiendasAsignadasIds);
+                    if ($sucursalesAsignadasIds !== []) {
+                        $qb->andWhere('s.activa = true OR s.id IN (:asignadas)')
+                            ->setParameter('asignadas', $sucursalesAsignadasIds);
                     } else {
-                        $qb->andWhere('t.activa = true');
+                        $qb->andWhere('s.activa = true');
                     }
 
                     return $qb;
                 },
             ])
-            ->add('rolesPorTienda', HiddenType::class, [
+            ->add('rolesPorSucursal', HiddenType::class, [
                 'mapped' => false,
                 'required' => false,
-                'data' => json_encode($personal->getRolesOrdenadosPorTiendaIds(), \JSON_FORCE_OBJECT),
+                'data' => json_encode($personal->getRolesOrdenadosPorSucursalIds(), \JSON_FORCE_OBJECT),
             ])
         ;
     }

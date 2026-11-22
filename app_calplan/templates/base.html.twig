@@ -37,9 +37,9 @@
         </a>
         <div class="d-flex align-items-center gap-2">
           {% if app.user %}
-            <a class="nav-link text-white d-inline-flex align-items-center gap-1" href="{{ path('app_tienda_index') }}">
+            <a class="nav-link text-white d-inline-flex align-items-center gap-1" href="{{ path('app_sucursal_index') }}">
               {{ ux_icon('bi:shop') }}
-              <span>Mis tiendas</span>
+              <span>Mis sucursales</span>
             </a>
             <a class="nav-link text-white d-inline-flex align-items-center gap-1" href="{{ path('app_rol_index') }}">
               {{ ux_icon('bi:person-badge') }}
@@ -85,7 +85,7 @@
       {% endblock %}
     </main>
     <footer class="mt-auto py-3 border-top text-center text-body-secondary">
-      <small>Planeación semanal de tienda</small>
+      <small>Planeación semanal de sucursal</small>
     </footer>
   </body>
 </html>

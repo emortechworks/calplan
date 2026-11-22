@@ -1,17 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nueva tienda · Calendario Planeación{% endblock %}
+{% block title %}Nueva sucursal · Calendario Planeación{% endblock %}
 
 {% block body %}
 <div class="row justify-content-center">
   <div class="col-md-8 col-lg-6">
     <h1 class="h3 mb-4 d-flex align-items-center gap-2">
       {{ ux_icon('bi:plus-circle') }}
-      <span>Nueva tienda</span>
+      <span>Nueva sucursal</span>
     </h1>
     <div class="card shadow-sm">
       <div class="card-body">
-        {% include 'tienda/_form.html.twig' %}
+        {% include 'sucursal/_form.html.twig' %}
       </div>
     </div>
   </div>

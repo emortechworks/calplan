@@ -10,7 +10,7 @@
   <div class="mb-3 mt-2">
     <label class="form-label mb-1 fw-semibold d-flex align-items-center gap-1">
       {{ ux_icon('bi:person-badge') }}
-      <span>Roles disponibles en esta tienda</span>
+      <span>Roles disponibles en esta sucursal</span>
     </label>
     {{ form_errors(form.roles) }}
     {% if form.roles|length > 0 %}
@@ -35,7 +35,7 @@
     {{ ux_icon('bi:check-lg') }}
     <span>Guardar</span>
   </button>
-  <a class="btn btn-outline-secondary m-2 p-2 d-inline-flex align-items-center gap-2" href="{{ path('app_tienda_index') }}">
+  <a class="btn btn-outline-secondary m-2 p-2 d-inline-flex align-items-center gap-2" href="{{ path('app_sucursal_index') }}">
     {{ ux_icon('bi:x-lg') }}
     <span>Cancelar</span>
   </a>

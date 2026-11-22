@@ -4,11 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Personal;
 use App\Entity\Rol;
-use App\Entity\Tienda;
+use App\Entity\Sucursal;
 use App\Entity\User;
 use App\Form\PersonalType;
 use App\Repository\PersonalRepository;
-use App\Repository\TiendaRepository;
+use App\Repository\SucursalRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -24,7 +24,7 @@ class PersonalController extends AbstractController
 {
     public function __construct(
         private PersonalRepository $personalRepository,
-        private TiendaRepository $tiendaRepository,
+        private SucursalRepository $sucursalRepository,
     ) {
     }
 
@@ -33,23 +33,23 @@ class PersonalController extends AbstractController
     {
         /** @var User $usuario */
         $usuario = $this->getUser();
-        $tiendas = $this->tiendaRepository->delUsuario($usuario);
+        $sucursales = $this->sucursalRepository->delUsuario($usuario);
 
-        $tiendaFiltro = null;
-        $tiendaId = $request->query->getInt('tienda', 0);
-        if ($tiendaId > 0) {
-            foreach ($tiendas as $tienda) {
-                if ($tienda->getId() === $tiendaId) {
-                    $tiendaFiltro = $tienda;
+        $sucursalFiltro = null;
+        $sucursalId = $request->query->getInt('sucursal', 0);
+        if ($sucursalId > 0) {
+            foreach ($sucursales as $sucursal) {
+                if ($sucursal->getId() === $sucursalId) {
+                    $sucursalFiltro = $sucursal;
                     break;
                 }
             }
         }
 
         return $this->render('personal/index.html.twig', [
-            'personal' => $this->personalRepository->delUsuario($usuario, $tiendaFiltro),
-            'tiendas' => $tiendas,
-            'tiendaFiltro' => $tiendaFiltro,
+            'personal' => $this->personalRepository->delUsuario($usuario, $sucursalFiltro),
+            'sucursales' => $sucursales,
+            'sucursalFiltro' => $sucursalFiltro,
         ]);
     }
 
@@ -99,8 +99,8 @@ class PersonalController extends AbstractController
         string $template,
         string $accion,
     ): Response {
-        $tiendasPermitidas = $this->tiendasParaFormulario($usuario, $persona);
-        $rolesPermitidosPorTienda = $this->rolesPermitidosPorTienda($tiendasPermitidas, $persona);
+        $sucursalesPermitidas = $this->sucursalesParaFormulario($usuario, $persona);
+        $rolesPermitidosPorSucursal = $this->rolesPermitidosPorSucursal($sucursalesPermitidas, $persona);
 
         $form = $this->createForm(PersonalType::class, $persona, [
             'usuario' => $usuario,
@@ -108,20 +108,20 @@ class PersonalController extends AbstractController
         ]);
         $form->handleRequest($request);
 
-        $seleccionPorTienda = $persona->getRolesOrdenadosPorTiendaIds();
+        $seleccionPorSucursal = $persona->getRolesOrdenadosPorSucursalIds();
 
         if ($form->isSubmitted()) {
-            $gruposValidos = $this->resolverRolesPorTiendaEnviados(
+            $gruposValidos = $this->resolverRolesPorSucursalEnviados(
                 $form,
                 $persona,
-                $tiendasPermitidas,
-                $rolesPermitidosPorTienda,
-                $seleccionPorTienda,
+                $sucursalesPermitidas,
+                $rolesPermitidosPorSucursal,
+                $seleccionPorSucursal,
             );
 
             if ($form->isValid() && $gruposValidos !== null) {
                 $persona->setUsuario($usuario);
-                $persona->reemplazarRolesPorTienda($gruposValidos);
+                $persona->reemplazarRolesPorSucursal($gruposValidos);
                 $entityManager->persist($persona);
                 $entityManager->flush();
 
@@ -131,77 +131,77 @@ class PersonalController extends AbstractController
             }
         }
 
-        $tiendasSeleccionadasIds = [];
-        foreach ($persona->getTiendas() as $tienda) {
-            if ($tienda->getId() !== null) {
-                $tiendasSeleccionadasIds[$tienda->getId()] = true;
+        $sucursalesSeleccionadasIds = [];
+        foreach ($persona->getSucursales() as $sucursal) {
+            if ($sucursal->getId() !== null) {
+                $sucursalesSeleccionadasIds[$sucursal->getId()] = true;
             }
         }
 
         return $this->render($template, [
             'form' => $form->createView(),
             'persona' => $persona,
-            'panelesPorTienda' => $this->construirPanelesParaVista(
-                $tiendasPermitidas,
-                $rolesPermitidosPorTienda,
-                $seleccionPorTienda,
-                $tiendasSeleccionadasIds,
+            'panelesPorSucursal' => $this->construirPanelesParaVista(
+                $sucursalesPermitidas,
+                $rolesPermitidosPorSucursal,
+                $seleccionPorSucursal,
+                $sucursalesSeleccionadasIds,
             ),
         ]);
     }
 
     /**
-     * Devuelve tiendas activas del usuario más las ya asignadas a la persona (indexadas por ID).
+     * Devuelve sucursales activas del usuario más las ya asignadas a la persona (indexadas por ID).
      *
-     * @return array<int, Tienda>
+     * @return array<int, Sucursal>
      */
-    private function tiendasParaFormulario(User $usuario, Personal $persona): array
+    private function sucursalesParaFormulario(User $usuario, Personal $persona): array
     {
         $asignadasIds = [];
-        foreach ($persona->getTiendas() as $tienda) {
-            if ($tienda->getId() !== null) {
-                $asignadasIds[$tienda->getId()] = true;
+        foreach ($persona->getSucursales() as $sucursal) {
+            if ($sucursal->getId() !== null) {
+                $asignadasIds[$sucursal->getId()] = true;
             }
         }
 
-        $tiendas = [];
-        foreach ($this->tiendaRepository->delUsuario($usuario) as $tienda) {
-            $tiendaId = $tienda->getId();
-            if ($tiendaId !== null && ($tienda->isActiva() || isset($asignadasIds[$tiendaId]))) {
-                $tiendas[$tiendaId] = $tienda;
+        $sucursales = [];
+        foreach ($this->sucursalRepository->delUsuario($usuario) as $sucursal) {
+            $sucursalId = $sucursal->getId();
+            if ($sucursalId !== null && ($sucursal->isActiva() || isset($asignadasIds[$sucursalId]))) {
+                $sucursales[$sucursalId] = $sucursal;
             }
         }
 
-        return $tiendas;
+        return $sucursales;
     }
 
     /**
-     * Por cada tienda permitida, reúne los roles activos asignados a esa tienda más los roles
-     * que la persona ya tenía en esa tienda (aunque hayan sido desactivados después).
+     * Por cada sucursal permitida, reúne los roles activos asignados a esa sucursal más los roles
+     * que la persona ya tenía en esa sucursal (aunque hayan sido desactivados después).
      *
-     * @param array<int, Tienda> $tiendasPermitidas
+     * @param array<int, Sucursal> $sucursalesPermitidas
      *
      * @return array<int, array<int, Rol>>
      */
-    private function rolesPermitidosPorTienda(array $tiendasPermitidas, Personal $persona): array
+    private function rolesPermitidosPorSucursal(array $sucursalesPermitidas, Personal $persona): array
     {
         $mapa = [];
-        foreach ($tiendasPermitidas as $tiendaId => $tienda) {
-            $mapa[$tiendaId] = [];
-            foreach ($tienda->getRoles() as $rol) {
+        foreach ($sucursalesPermitidas as $sucursalId => $sucursal) {
+            $mapa[$sucursalId] = [];
+            foreach ($sucursal->getRoles() as $rol) {
                 $rolId = $rol->getId();
                 if ($rolId !== null && $rol->isActivo()) {
-                    $mapa[$tiendaId][$rolId] = $rol;
+                    $mapa[$sucursalId][$rolId] = $rol;
                 }
             }
         }
 
         foreach ($persona->getPersonalRoles() as $asignacion) {
-            $tiendaId = $asignacion->getTienda()->getId();
+            $sucursalId = $asignacion->getSucursal()->getId();
             $rol = $asignacion->getRol();
             $rolId = $rol->getId();
-            if ($tiendaId !== null && $rolId !== null && isset($mapa[$tiendaId]) && !isset($mapa[$tiendaId][$rolId])) {
-                $mapa[$tiendaId][$rolId] = $rol;
+            if ($sucursalId !== null && $rolId !== null && isset($mapa[$sucursalId]) && !isset($mapa[$sucursalId][$rolId])) {
+                $mapa[$sucursalId][$rolId] = $rol;
             }
         }
 
@@ -209,55 +209,55 @@ class PersonalController extends AbstractController
     }
 
     /**
-     * Valida en servidor el JSON { tiendaId: [rolId, ...] }: cada tienda debe estar seleccionada
-     * en el personal y cada rol debe pertenecer a esa tienda.
+     * Valida en servidor el JSON { sucursalId: [rolId, ...] }: cada sucursal debe estar seleccionada
+     * en el personal y cada rol debe pertenecer a esa sucursal.
      *
-     * @param array<int, Tienda>          $tiendasPermitidas
-     * @param array<int, array<int, Rol>> $rolesPermitidosPorTienda
-     * @param array<int, list<int>>       $seleccionPorTienda
+     * @param array<int, Sucursal>        $sucursalesPermitidas
+     * @param array<int, array<int, Rol>> $rolesPermitidosPorSucursal
+     * @param array<int, list<int>>       $seleccionPorSucursal
      *
-     * @return list<array{tienda: Tienda, roles: list<Rol>}>|null
+     * @return list<array{sucursal: Sucursal, roles: list<Rol>}>|null
      */
-    private function resolverRolesPorTiendaEnviados(
+    private function resolverRolesPorSucursalEnviados(
         FormInterface $form,
         Personal $persona,
-        array $tiendasPermitidas,
-        array $rolesPermitidosPorTienda,
-        array &$seleccionPorTienda,
+        array $sucursalesPermitidas,
+        array $rolesPermitidosPorSucursal,
+        array &$seleccionPorSucursal,
     ): ?array {
-        $crudo = trim((string) $form->get('rolesPorTienda')->getData());
+        $crudo = trim((string) $form->get('rolesPorSucursal')->getData());
         if ($crudo === '' || $crudo === '{}' || $crudo === '[]') {
-            $seleccionPorTienda = [];
+            $seleccionPorSucursal = [];
 
             return [];
         }
 
         $decodificado = json_decode($crudo, true);
         if (!\is_array($decodificado)) {
-            $form->get('rolesPorTienda')->addError(new FormError('Selección de roles por tienda inválida.'));
+            $form->get('rolesPorSucursal')->addError(new FormError('Selección de roles por sucursal inválida.'));
 
             return null;
         }
 
-        $tiendasMarcadasIds = [];
-        foreach ($persona->getTiendas() as $tienda) {
-            if ($tienda->getId() !== null) {
-                $tiendasMarcadasIds[$tienda->getId()] = true;
+        $sucursalesMarcadasIds = [];
+        foreach ($persona->getSucursales() as $sucursal) {
+            if ($sucursal->getId() !== null) {
+                $sucursalesMarcadasIds[$sucursal->getId()] = true;
             }
         }
 
         $grupos = [];
         $nuevaSeleccion = [];
-        foreach ($decodificado as $tiendaKey => $rolIds) {
-            if (!\is_int($tiendaKey) && !ctype_digit((string) $tiendaKey)) {
-                $form->get('rolesPorTienda')->addError(new FormError('Tienda inválida en la asignación de roles.'));
+        foreach ($decodificado as $sucursalKey => $rolIds) {
+            if (!\is_int($sucursalKey) && !ctype_digit((string) $sucursalKey)) {
+                $form->get('rolesPorSucursal')->addError(new FormError('Sucursal inválida en la asignación de roles.'));
 
                 return null;
             }
 
-            $tiendaId = (int) $tiendaKey;
+            $sucursalId = (int) $sucursalKey;
             if (!\is_array($rolIds)) {
-                $form->get('rolesPorTienda')->addError(new FormError('Selección de roles por tienda inválida.'));
+                $form->get('rolesPorSucursal')->addError(new FormError('Selección de roles por sucursal inválida.'));
 
                 return null;
             }
@@ -266,65 +266,65 @@ class PersonalController extends AbstractController
                 continue;
             }
 
-            if (!isset($tiendasPermitidas[$tiendaId]) || !isset($tiendasMarcadasIds[$tiendaId])) {
-                $form->get('rolesPorTienda')->addError(new FormError('No puedes asignar roles de una tienda que no está seleccionada.'));
+            if (!isset($sucursalesPermitidas[$sucursalId]) || !isset($sucursalesMarcadasIds[$sucursalId])) {
+                $form->get('rolesPorSucursal')->addError(new FormError('No puedes asignar roles de una sucursal que no está seleccionada.'));
 
                 return null;
             }
 
-            $rolesTienda = [];
-            $idsTienda = [];
+            $rolesSucursal = [];
+            $idsSucursal = [];
             foreach ($rolIds as $valorRol) {
                 if (!\is_int($valorRol) && !ctype_digit((string) $valorRol)) {
-                    $form->get('rolesPorTienda')->addError(new FormError('Selección de roles inválida.'));
+                    $form->get('rolesPorSucursal')->addError(new FormError('Selección de roles inválida.'));
 
                     return null;
                 }
 
                 $rolId = (int) $valorRol;
-                if (!isset($rolesPermitidosPorTienda[$tiendaId][$rolId])) {
-                    $form->get('rolesPorTienda')->addError(new FormError('Uno de los roles seleccionados no pertenece a esa tienda.'));
+                if (!isset($rolesPermitidosPorSucursal[$sucursalId][$rolId])) {
+                    $form->get('rolesPorSucursal')->addError(new FormError('Uno de los roles seleccionados no pertenece a esa sucursal.'));
 
                     return null;
                 }
 
-                if (!isset($rolesTienda[$rolId])) {
-                    $rolesTienda[$rolId] = $rolesPermitidosPorTienda[$tiendaId][$rolId];
-                    $idsTienda[] = $rolId;
+                if (!isset($rolesSucursal[$rolId])) {
+                    $rolesSucursal[$rolId] = $rolesPermitidosPorSucursal[$sucursalId][$rolId];
+                    $idsSucursal[] = $rolId;
                 }
             }
 
-            $nuevaSeleccion[$tiendaId] = $idsTienda;
+            $nuevaSeleccion[$sucursalId] = $idsSucursal;
             $grupos[] = [
-                'tienda' => $tiendasPermitidas[$tiendaId],
-                'roles' => array_values($rolesTienda),
+                'sucursal' => $sucursalesPermitidas[$sucursalId],
+                'roles' => array_values($rolesSucursal),
             ];
         }
 
-        $seleccionPorTienda = $nuevaSeleccion;
+        $seleccionPorSucursal = $nuevaSeleccion;
 
         return $grupos;
     }
 
     /**
-     * @param array<int, Tienda>          $tiendasPermitidas
-     * @param array<int, array<int, Rol>> $rolesPermitidosPorTienda
-     * @param array<int, list<int>>       $seleccionPorTienda
-     * @param array<int, true>            $tiendasSeleccionadasIds
+     * @param array<int, Sucursal>        $sucursalesPermitidas
+     * @param array<int, array<int, Rol>> $rolesPermitidosPorSucursal
+     * @param array<int, list<int>>       $seleccionPorSucursal
+     * @param array<int, true>            $sucursalesSeleccionadasIds
      *
-     * @return list<array{tienda: Tienda, visible: bool, rolesAsignados: list<Rol>, rolesDisponibles: list<Rol>}>
+     * @return list<array{sucursal: Sucursal, visible: bool, rolesAsignados: list<Rol>, rolesDisponibles: list<Rol>}>
      */
     private function construirPanelesParaVista(
-        array $tiendasPermitidas,
-        array $rolesPermitidosPorTienda,
-        array $seleccionPorTienda,
-        array $tiendasSeleccionadasIds,
+        array $sucursalesPermitidas,
+        array $rolesPermitidosPorSucursal,
+        array $seleccionPorSucursal,
+        array $sucursalesSeleccionadasIds,
     ): array {
         $paneles = [];
 
-        foreach ($tiendasPermitidas as $tiendaId => $tienda) {
-            $permitidos = $rolesPermitidosPorTienda[$tiendaId] ?? [];
-            $idsAsignados = $seleccionPorTienda[$tiendaId] ?? [];
+        foreach ($sucursalesPermitidas as $sucursalId => $sucursal) {
+            $permitidos = $rolesPermitidosPorSucursal[$sucursalId] ?? [];
+            $idsAsignados = $seleccionPorSucursal[$sucursalId] ?? [];
 
             $asignados = [];
             $usados = [];
@@ -343,8 +343,8 @@ class PersonalController extends AbstractController
             }
 
             $paneles[] = [
-                'tienda' => $tienda,
-                'visible' => isset($tiendasSeleccionadasIds[$tiendaId]),
+                'sucursal' => $sucursal,
+                'visible' => isset($sucursalesSeleccionadasIds[$sucursalId]),
                 'rolesAsignados' => $asignados,
                 'rolesDisponibles' => $disponibles,
             ];

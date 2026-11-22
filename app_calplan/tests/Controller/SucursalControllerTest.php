@@ -3,14 +3,14 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Rol;
-use App\Entity\Tienda;
+use App\Entity\Sucursal;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class TiendaControllerTest extends WebTestCase
+final class SucursalControllerTest extends WebTestCase
 {
     private function crearUsuario(string $email): User
     {
@@ -26,18 +26,18 @@ final class TiendaControllerTest extends WebTestCase
         return $usuario;
     }
 
-    private function crearTienda(User $usuario, string $nombre, ?string $codigo = null): Tienda
+    private function crearSucursal(User $usuario, string $nombre, ?string $codigo = null): Sucursal
     {
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
 
-        $tienda = new Tienda();
-        $tienda->setUsuario($usuario);
-        $tienda->setNombre($nombre);
-        $tienda->setCodigo($codigo);
-        $entityManager->persist($tienda);
+        $sucursal = new Sucursal();
+        $sucursal->setUsuario($usuario);
+        $sucursal->setNombre($nombre);
+        $sucursal->setCodigo($codigo);
+        $entityManager->persist($sucursal);
         $entityManager->flush();
 
-        return $tienda;
+        return $sucursal;
     }
 
     private function crearRol(User $usuario, string $nombre, bool $activo = true): Rol
@@ -71,7 +71,7 @@ final class TiendaControllerTest extends WebTestCase
     public function testSinSesionRedirigeALogin(): void
     {
         $client = static::createClient();
-        $client->request('GET', '/tiendas');
+        $client->request('GET', '/sucursales');
 
         self::assertResponseRedirects('/login');
     }
@@ -80,87 +80,87 @@ final class TiendaControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $usuario = $this->crearUsuario($this->uniqueEmail('tienda_list'));
-        $this->crearTienda($usuario, 'Tienda activa');
-        $tiendaInactiva = $this->crearTienda($usuario, 'Tienda desactivada');
-        $tiendaInactiva->setActiva(false);
+        $usuario = $this->crearUsuario($this->uniqueEmail('suc_list'));
+        $this->crearSucursal($usuario, 'Sucursal activa');
+        $sucursalInactiva = $this->crearSucursal($usuario, 'Sucursal desactivada');
+        $sucursalInactiva->setActiva(false);
         static::getContainer()->get(EntityManagerInterface::class)->flush();
 
-        $this->crearTienda($this->crearUsuario($this->uniqueEmail('tienda_ajena')), 'Tienda de otro');
+        $this->crearSucursal($this->crearUsuario($this->uniqueEmail('suc_ajena')), 'Sucursal de otro');
 
         $this->login($client, $usuario->getEmail());
-        $client->request('GET', '/tiendas');
+        $client->request('GET', '/sucursales');
 
         self::assertResponseIsSuccessful();
-        $html = $client->getResponse()->getContent();
-        self::assertStringContainsString('Tienda activa', $html);
-        self::assertStringContainsString('Tienda desactivada', $html);
+        $html = (string) $client->getResponse()->getContent();
+        self::assertStringContainsString('Sucursal activa', $html);
+        self::assertStringContainsString('Sucursal desactivada', $html);
         self::assertStringContainsString('desactivada', $html);
-        self::assertStringNotContainsString('Tienda de otro', $html);
+        self::assertStringNotContainsString('Sucursal de otro', $html);
     }
 
-    public function testCrearTienda(): void
+    public function testCrearSucursal(): void
     {
         $client = static::createClient();
-        $this->login($client, $this->crearUsuario($this->uniqueEmail('tienda_crea'))->getEmail());
+        $this->login($client, $this->crearUsuario($this->uniqueEmail('suc_crea'))->getEmail());
 
-        $crawler = $client->request('GET', '/tiendas/nueva');
+        $crawler = $client->request('GET', '/sucursales/nueva');
         self::assertResponseIsSuccessful();
         $form = $crawler->selectButton('Guardar')->form();
-        $form['tienda[nombre]'] = 'Tienda nueva';
-        $form['tienda[codigo]'] = 'TN-1';
+        $form['sucursal[nombre]'] = 'Sucursal nueva';
+        $form['sucursal[codigo]'] = 'SN-1';
         $client->submit($form);
 
-        self::assertResponseRedirects('/tiendas');
+        self::assertResponseRedirects('/sucursales');
         $client->followRedirect();
         self::assertResponseIsSuccessful();
-        self::assertStringContainsString('Tienda nueva', $client->getResponse()->getContent());
+        self::assertStringContainsString('Sucursal nueva', (string) $client->getResponse()->getContent());
     }
 
     public function testNombreDuplicadoMuestraError(): void
     {
         $client = static::createClient();
-        $usuario = $this->crearUsuario($this->uniqueEmail('tienda_dup'));
-        $this->crearTienda($usuario, 'Centro');
+        $usuario = $this->crearUsuario($this->uniqueEmail('suc_dup'));
+        $this->crearSucursal($usuario, 'Centro');
 
         $this->login($client, $usuario->getEmail());
 
-        $crawler = $client->request('GET', '/tiendas/nueva');
+        $crawler = $client->request('GET', '/sucursales/nueva');
         $form = $crawler->selectButton('Guardar')->form();
-        $form['tienda[nombre]'] = 'Centro';
+        $form['sucursal[nombre]'] = 'Centro';
         $client->submit($form);
 
         self::assertResponseIsSuccessful();
-        self::assertStringContainsString('Ya tienes una tienda con ese nombre.', $client->getResponse()->getContent());
+        self::assertStringContainsString('Ya tienes una sucursal con ese nombre.', (string) $client->getResponse()->getContent());
     }
 
-    public function testEditarPropiaTienda(): void
+    public function testEditarPropiaSucursal(): void
     {
         $client = static::createClient();
-        $usuario = $this->crearUsuario($this->uniqueEmail('tienda_editar'));
-        $tienda = $this->crearTienda($usuario, 'Centro');
+        $usuario = $this->crearUsuario($this->uniqueEmail('suc_editar'));
+        $sucursal = $this->crearSucursal($usuario, 'Centro');
 
         $this->login($client, $usuario->getEmail());
 
-        $crawler = $client->request('GET', '/tiendas/'.$tienda->getId().'/editar');
+        $crawler = $client->request('GET', '/sucursales/'.$sucursal->getId().'/editar');
         self::assertResponseIsSuccessful();
         $form = $crawler->selectButton('Guardar')->form();
-        $form['tienda[nombre]'] = 'Centro Editado';
+        $form['sucursal[nombre]'] = 'Centro Editado';
         $client->submit($form);
 
-        self::assertResponseRedirects('/tiendas');
+        self::assertResponseRedirects('/sucursales');
         $client->followRedirect();
         self::assertResponseIsSuccessful();
-        self::assertStringContainsString('Centro Editado', $client->getResponse()->getContent());
+        self::assertStringContainsString('Centro Editado', (string) $client->getResponse()->getContent());
     }
 
-    public function testEditarTiendaAjenaDa404(): void
+    public function testEditarSucursalAjenaDa404(): void
     {
         $client = static::createClient();
-        $tienda = $this->crearTienda($this->crearUsuario($this->uniqueEmail('tienda_ajenas')), 'Ajena');
+        $sucursal = $this->crearSucursal($this->crearUsuario($this->uniqueEmail('suc_ajenas')), 'Ajena');
 
-        $this->login($client, $this->crearUsuario($this->uniqueEmail('tienda_otro_editar'))->getEmail());
-        $client->request('GET', '/tiendas/'.$tienda->getId().'/editar');
+        $this->login($client, $this->crearUsuario($this->uniqueEmail('suc_otro_editar'))->getEmail());
+        $client->request('GET', '/sucursales/'.$sucursal->getId().'/editar');
 
         self::assertResponseStatusCodeSame(404);
     }
@@ -168,59 +168,59 @@ final class TiendaControllerTest extends WebTestCase
     public function testAlternarDesactivaYReactiva(): void
     {
         $client = static::createClient();
-        $usuario = $this->crearUsuario($this->uniqueEmail('tienda_alternar'));
-        $tienda = $this->crearTienda($usuario, 'Alterna');
+        $usuario = $this->crearUsuario($this->uniqueEmail('suc_alternar'));
+        $sucursal = $this->crearSucursal($usuario, 'Alterna');
         $connection = static::getContainer()->get(EntityManagerInterface::class)->getConnection();
 
         $this->login($client, $usuario->getEmail());
 
-        $client->request('POST', '/tiendas/'.$tienda->getId().'/alternar', ['_token' => $this->tokenDeListado($client)]);
-        self::assertResponseRedirects('/tiendas');
-        self::assertEquals(0, $connection->fetchOne('SELECT activa FROM tienda WHERE id = ?', [$tienda->getId()]));
+        $client->request('POST', '/sucursales/'.$sucursal->getId().'/alternar', ['_token' => $this->tokenDeListado($client)]);
+        self::assertResponseRedirects('/sucursales');
+        self::assertEquals(0, $connection->fetchOne('SELECT activa FROM sucursal WHERE id = ?', [$sucursal->getId()]));
 
-        $client->request('POST', '/tiendas/'.$tienda->getId().'/alternar', ['_token' => $this->tokenDeListado($client)]);
-        self::assertResponseRedirects('/tiendas');
-        self::assertEquals(1, $connection->fetchOne('SELECT activa FROM tienda WHERE id = ?', [$tienda->getId()]));
+        $client->request('POST', '/sucursales/'.$sucursal->getId().'/alternar', ['_token' => $this->tokenDeListado($client)]);
+        self::assertResponseRedirects('/sucursales');
+        self::assertEquals(1, $connection->fetchOne('SELECT activa FROM sucursal WHERE id = ?', [$sucursal->getId()]));
     }
 
-    public function testAsignarYEditarRolesEnTienda(): void
+    public function testAsignarYEditarRolesEnSucursal(): void
     {
         $client = static::createClient();
-        $usuario = $this->crearUsuario($this->uniqueEmail('tienda_roles'));
+        $usuario = $this->crearUsuario($this->uniqueEmail('suc_roles'));
         $rolA = $this->crearRol($usuario, 'Cajero');
         $rolB = $this->crearRol($usuario, 'Panadero');
         $connection = static::getContainer()->get(EntityManagerInterface::class)->getConnection();
 
         $this->login($client, $usuario->getEmail());
 
-        $crawler = $client->request('GET', '/tiendas/nueva');
+        $crawler = $client->request('GET', '/sucursales/nueva');
         self::assertResponseIsSuccessful();
         $form = $crawler->selectButton('Guardar')->form();
-        $form['tienda[nombre]'] = 'Sucursal Con Roles';
-        $form['tienda[roles]'][0]->tick();
-        $form['tienda[roles]'][1]->tick();
+        $form['sucursal[nombre]'] = 'Sucursal Con Roles';
+        $form['sucursal[roles]'][0]->tick();
+        $form['sucursal[roles]'][1]->tick();
         $client->submit($form);
 
-        self::assertResponseRedirects('/tiendas');
+        self::assertResponseRedirects('/sucursales');
         $client->followRedirect();
         $html = (string) $client->getResponse()->getContent();
         self::assertStringContainsString('Sucursal Con Roles', $html);
         self::assertStringContainsString('Cajero', $html);
         self::assertStringContainsString('Panadero', $html);
 
-        $tiendaId = (int) $connection->fetchOne('SELECT id FROM tienda WHERE usuario_id = ? AND nombre = ?', [$usuario->getId(), 'Sucursal Con Roles']);
-        $rolesGuardados = $connection->fetchFirstColumn('SELECT rol_id FROM tienda_rol WHERE tienda_id = ?', [$tiendaId]);
+        $sucursalId = (int) $connection->fetchOne('SELECT id FROM sucursal WHERE usuario_id = ? AND nombre = ?', [$usuario->getId(), 'Sucursal Con Roles']);
+        $rolesGuardados = $connection->fetchFirstColumn('SELECT rol_id FROM sucursal_rol WHERE sucursal_id = ?', [$sucursalId]);
         self::assertEqualsCanonicalizing([$rolA->getId(), $rolB->getId()], array_map('intval', $rolesGuardados));
     }
 
     /**
      * Extrae el token CSRF del formulario de alternar del listado
-     * (visita GET /tiendas tras el login, luego lee el `_token` oculto).
+     * (visita GET /sucursales tras el login, luego lee el `_token` oculto).
      */
     private function tokenDeListado(KernelBrowser $client): string
     {
-        $client->request('GET', '/tiendas');
-        $html = $client->getResponse()->getContent();
+        $client->request('GET', '/sucursales');
+        $html = (string) $client->getResponse()->getContent();
         preg_match('/name="_token" value="([^"]+)"/', $html, $matches);
 
         return $matches[1];

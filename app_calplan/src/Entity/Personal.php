@@ -37,11 +37,11 @@ class Personal
     private bool $activo = true;
 
     /**
-     * @var Collection<int, Tienda>
+     * @var Collection<int, Sucursal>
      */
-    #[ORM\ManyToMany(targetEntity: Tienda::class)]
-    #[ORM\JoinTable(name: 'personal_tienda')]
-    private Collection $tiendas;
+    #[ORM\ManyToMany(targetEntity: Sucursal::class)]
+    #[ORM\JoinTable(name: 'personal_sucursal')]
+    private Collection $sucursales;
 
     /**
      * @var Collection<int, PersonalRol>
@@ -58,7 +58,7 @@ class Personal
 
     public function __construct()
     {
-        $this->tiendas = new ArrayCollection();
+        $this->sucursales = new ArrayCollection();
         $this->personalRoles = new ArrayCollection();
     }
 
@@ -153,25 +153,25 @@ class Personal
     }
 
     /**
-     * @return Collection<int, Tienda>
+     * @return Collection<int, Sucursal>
      */
-    public function getTiendas(): Collection
+    public function getSucursales(): Collection
     {
-        return $this->tiendas;
+        return $this->sucursales;
     }
 
-    public function addTienda(Tienda $tienda): static
+    public function addSucursal(Sucursal $sucursal): static
     {
-        if (!$this->tiendas->contains($tienda)) {
-            $this->tiendas->add($tienda);
+        if (!$this->sucursales->contains($sucursal)) {
+            $this->sucursales->add($sucursal);
         }
 
         return $this;
     }
 
-    public function removeTienda(Tienda $tienda): static
+    public function removeSucursal(Sucursal $sucursal): static
     {
-        $this->tiendas->removeElement($tienda);
+        $this->sucursales->removeElement($sucursal);
 
         return $this;
     }
@@ -185,27 +185,27 @@ class Personal
     }
 
     /**
-     * Sincroniza los roles por tienda actualizando prioridades en sitio para evitar
-     * colisiones en UNIQ_PERSONAL_TIENDA_ROL durante un único flush() de Doctrine.
+     * Sincroniza los roles por sucursal actualizando prioridades en sitio para evitar
+     * colisiones en UNIQ_PERSONAL_SUCURSAL_ROL durante un único flush() de Doctrine.
      *
-     * @param list<array{tienda: Tienda, roles: list<Rol>}> $rolesPorTienda
+     * @param list<array{sucursal: Sucursal, roles: list<Rol>}> $rolesPorSucursal
      */
-    public function reemplazarRolesPorTienda(array $rolesPorTienda): void
+    public function reemplazarRolesPorSucursal(array $rolesPorSucursal): void
     {
         $existentesPorClave = [];
         foreach ($this->personalRoles as $personalRol) {
-            $tiendaId = $personalRol->getTienda()->getId();
+            $sucursalId = $personalRol->getSucursal()->getId();
             $rolId = $personalRol->getRol()->getId();
-            if ($tiendaId !== null && $rolId !== null) {
-                $existentesPorClave[$tiendaId.':'.$rolId] = $personalRol;
+            if ($sucursalId !== null && $rolId !== null) {
+                $existentesPorClave[$sucursalId.':'.$rolId] = $personalRol;
             }
         }
 
         $conservados = [];
-        foreach ($rolesPorTienda as $grupo) {
-            $tienda = $grupo['tienda'];
-            $tiendaId = $tienda->getId();
-            if ($tiendaId === null) {
+        foreach ($rolesPorSucursal as $grupo) {
+            $sucursal = $grupo['sucursal'];
+            $sucursalId = $sucursal->getId();
+            if ($sucursalId === null) {
                 continue;
             }
 
@@ -216,7 +216,7 @@ class Personal
                     continue;
                 }
 
-                $clave = $tiendaId.':'.$rolId;
+                $clave = $sucursalId.':'.$rolId;
                 if (isset($conservados[$clave])) {
                     continue;
                 }
@@ -225,7 +225,7 @@ class Personal
                 if (isset($existentesPorClave[$clave])) {
                     $existentesPorClave[$clave]->setPrioridad($prioridad);
                 } else {
-                    $this->personalRoles->add(new PersonalRol($this, $tienda, $rol, $prioridad));
+                    $this->personalRoles->add(new PersonalRol($this, $sucursal, $rol, $prioridad));
                 }
                 ++$prioridad;
             }
@@ -239,19 +239,19 @@ class Personal
     }
 
     /**
-     * @return array<int, list<int>> mapa tiendaId => lista ordenada de rolIds por prioridad
+     * @return array<int, list<int>> mapa sucursalId => lista ordenada de rolIds por prioridad
      */
-    public function getRolesOrdenadosPorTiendaIds(): array
+    public function getRolesOrdenadosPorSucursalIds(): array
     {
         $asignaciones = $this->personalRoles->toArray();
         usort($asignaciones, static fn (PersonalRol $a, PersonalRol $b): int => $a->getPrioridad() <=> $b->getPrioridad());
 
         $mapa = [];
         foreach ($asignaciones as $asignacion) {
-            $tiendaId = $asignacion->getTienda()->getId();
+            $sucursalId = $asignacion->getSucursal()->getId();
             $rolId = $asignacion->getRol()->getId();
-            if ($tiendaId !== null && $rolId !== null) {
-                $mapa[$tiendaId][] = $rolId;
+            if ($sucursalId !== null && $rolId !== null) {
+                $mapa[$sucursalId][] = $rolId;
             }
         }
 
@@ -261,11 +261,11 @@ class Personal
     /**
      * @return list<PersonalRol>
      */
-    public function getRolesDeTienda(Tienda $tienda): array
+    public function getRolesDeSucursal(Sucursal $sucursal): array
     {
         $resultado = [];
         foreach ($this->personalRoles as $asignacion) {
-            if ($asignacion->getTienda()->getId() === $tienda->getId()) {
+            if ($asignacion->getSucursal()->getId() === $sucursal->getId()) {
                 $resultado[] = $asignacion;
             }
         }

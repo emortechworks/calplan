@@ -4,7 +4,7 @@ namespace App\Tests\Controller;
 
 use App\Entity\Personal;
 use App\Entity\Rol;
-use App\Entity\Tienda;
+use App\Entity\Sucursal;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -30,21 +30,21 @@ final class PersonalControllerTest extends WebTestCase
     /**
      * @param list<Rol> $roles
      */
-    private function crearTienda(User $usuario, string $nombre, bool $activa = true, array $roles = []): Tienda
+    private function crearSucursal(User $usuario, string $nombre, bool $activa = true, array $roles = []): Sucursal
     {
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
 
-        $tienda = new Tienda();
-        $tienda->setUsuario($usuario);
-        $tienda->setNombre($nombre);
-        $tienda->setActiva($activa);
+        $sucursal = new Sucursal();
+        $sucursal->setUsuario($usuario);
+        $sucursal->setNombre($nombre);
+        $sucursal->setActiva($activa);
         foreach ($roles as $rol) {
-            $tienda->addRol($rol);
+            $sucursal->addRol($rol);
         }
-        $entityManager->persist($tienda);
+        $entityManager->persist($sucursal);
         $entityManager->flush();
 
-        return $tienda;
+        return $sucursal;
     }
 
     private function crearRol(User $usuario, string $nombre, bool $activo = true): Rol
@@ -62,10 +62,10 @@ final class PersonalControllerTest extends WebTestCase
     }
 
     /**
-     * @param list<Tienda>                                  $tiendas
-     * @param list<array{tienda: Tienda, roles: list<Rol>}> $rolesPorTienda
+     * @param list<Sucursal>                                    $sucursales
+     * @param list<array{sucursal: Sucursal, roles: list<Rol>}> $rolesPorSucursal
      */
-    private function crearPersonal(User $usuario, string $nombre, bool $activo = true, array $tiendas = [], array $rolesPorTienda = []): Personal
+    private function crearPersonal(User $usuario, string $nombre, bool $activo = true, array $sucursales = [], array $rolesPorSucursal = []): Personal
     {
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
 
@@ -73,10 +73,10 @@ final class PersonalControllerTest extends WebTestCase
         $persona->setUsuario($usuario);
         $persona->setNombre($nombre);
         $persona->setActivo($activo);
-        foreach ($tiendas as $tienda) {
-            $persona->addTienda($tienda);
+        foreach ($sucursales as $sucursal) {
+            $persona->addSucursal($sucursal);
         }
-        $persona->reemplazarRolesPorTienda($rolesPorTienda);
+        $persona->reemplazarRolesPorSucursal($rolesPorSucursal);
         $entityManager->persist($persona);
         $entityManager->flush();
 
@@ -105,21 +105,21 @@ final class PersonalControllerTest extends WebTestCase
         self::assertResponseRedirects('/login');
     }
 
-    public function testListaPropiosYFiltraPorTiendaSinMostrarAjenos(): void
+    public function testListaPropiosYFiltraPorSucursalSinMostrarAjenos(): void
     {
         $client = static::createClient();
 
         $usuario = $this->crearUsuario($this->uniqueEmail('pers_list'));
         $rolGerente = $this->crearRol($usuario, 'Gerente titular');
         $rolCaja = $this->crearRol($usuario, 'Encargado de caja');
-        $tiendaCentro = $this->crearTienda($usuario, 'Sucursal Centro', true, [$rolGerente, $rolCaja]);
-        $tiendaNorte = $this->crearTienda($usuario, 'Sucursal Norte', true, [$rolCaja]);
+        $sucursalCentro = $this->crearSucursal($usuario, 'Sucursal Centro', true, [$rolGerente, $rolCaja]);
+        $sucursalNorte = $this->crearSucursal($usuario, 'Sucursal Norte', true, [$rolCaja]);
 
-        $this->crearPersonal($usuario, 'Ana López', true, [$tiendaCentro], [
-            ['tienda' => $tiendaCentro, 'roles' => [$rolGerente, $rolCaja]],
+        $this->crearPersonal($usuario, 'Ana López', true, [$sucursalCentro], [
+            ['sucursal' => $sucursalCentro, 'roles' => [$rolGerente, $rolCaja]],
         ]);
-        $this->crearPersonal($usuario, 'Luis Pérez', false, [$tiendaNorte], [
-            ['tienda' => $tiendaNorte, 'roles' => [$rolCaja]],
+        $this->crearPersonal($usuario, 'Luis Pérez', false, [$sucursalNorte], [
+            ['sucursal' => $sucursalNorte, 'roles' => [$rolCaja]],
         ]);
         $this->crearPersonal($this->crearUsuario($this->uniqueEmail('pers_ajeno')), 'Persona de otro');
 
@@ -135,22 +135,22 @@ final class PersonalControllerTest extends WebTestCase
         self::assertStringContainsString('Gerente titular', $html);
         self::assertStringNotContainsString('Persona de otro', $html);
 
-        $client->request('GET', '/personal?tienda='.$tiendaCentro->getId());
+        $client->request('GET', '/personal?sucursal='.$sucursalCentro->getId());
         self::assertResponseIsSuccessful();
         $htmlFiltrado = (string) $client->getResponse()->getContent();
         self::assertStringContainsString('Ana López', $htmlFiltrado);
         self::assertStringNotContainsString('Luis Pérez', $htmlFiltrado);
     }
 
-    public function testCrearPersonalConPrioridadesIndependientesPorTienda(): void
+    public function testCrearPersonalConPrioridadesIndependientesPorSucursal(): void
     {
         $client = static::createClient();
         $usuario = $this->crearUsuario($this->uniqueEmail('pers_crea'));
         $rolGerente = $this->crearRol($usuario, 'Gerente titular');
         $rolPanadero = $this->crearRol($usuario, 'Panadero');
         $rolCajero = $this->crearRol($usuario, 'Cajero');
-        $tiendaCentro = $this->crearTienda($usuario, 'Centro', true, [$rolGerente, $rolPanadero]);
-        $tiendaNorte = $this->crearTienda($usuario, 'Norte', true, [$rolGerente, $rolCajero]);
+        $sucursalCentro = $this->crearSucursal($usuario, 'Centro', true, [$rolGerente, $rolPanadero]);
+        $sucursalNorte = $this->crearSucursal($usuario, 'Norte', true, [$rolGerente, $rolCajero]);
         $connection = static::getContainer()->get(EntityManagerInterface::class)->getConnection();
 
         $this->login($client, $usuario->getEmail());
@@ -163,11 +163,11 @@ final class PersonalControllerTest extends WebTestCase
         $form['personal[horasSemanales]'] = '40';
         $form['personal[fechaNacimiento]'] = '1994-05-12';
         $form['personal[finContrato]'] = '2027-01-31';
-        $form['personal[tiendas]'][0]->tick();
-        $form['personal[tiendas]'][1]->tick();
-        $form['personal[rolesPorTienda]'] = json_encode([
-            $tiendaCentro->getId() => [$rolPanadero->getId(), $rolGerente->getId()],
-            $tiendaNorte->getId() => [$rolGerente->getId(), $rolCajero->getId()],
+        $form['personal[sucursales]'][0]->tick();
+        $form['personal[sucursales]'][1]->tick();
+        $form['personal[rolesPorSucursal]'] = json_encode([
+            $sucursalCentro->getId() => [$rolPanadero->getId(), $rolGerente->getId()],
+            $sucursalNorte->getId() => [$rolGerente->getId(), $rolCajero->getId()],
         ]);
         $client->submit($form);
 
@@ -182,25 +182,25 @@ final class PersonalControllerTest extends WebTestCase
         $personaId = (int) $connection->fetchOne('SELECT id FROM personal WHERE usuario_id = ? AND nombre = ?', [$usuario->getId(), 'María García']);
         self::assertGreaterThan(0, $personaId);
 
-        $tiendasGuardadas = $connection->fetchFirstColumn('SELECT tienda_id FROM personal_tienda WHERE personal_id = ?', [$personaId]);
-        self::assertEqualsCanonicalizing([$tiendaCentro->getId(), $tiendaNorte->getId()], array_map('intval', $tiendasGuardadas));
+        $sucursalesGuardadas = $connection->fetchFirstColumn('SELECT sucursal_id FROM personal_sucursal WHERE personal_id = ?', [$personaId]);
+        self::assertEqualsCanonicalizing([$sucursalCentro->getId(), $sucursalNorte->getId()], array_map('intval', $sucursalesGuardadas));
 
         $rolesGuardados = $connection->fetchAllAssociative(
-            'SELECT tienda_id, rol_id, prioridad FROM personal_rol WHERE personal_id = ? ORDER BY tienda_id ASC, prioridad ASC',
+            'SELECT sucursal_id, rol_id, prioridad FROM personal_rol WHERE personal_id = ? ORDER BY sucursal_id ASC, prioridad ASC',
             [$personaId],
         );
         self::assertSame([
-            ['tienda_id' => $tiendaCentro->getId(), 'rol_id' => $rolPanadero->getId(), 'prioridad' => 1],
-            ['tienda_id' => $tiendaCentro->getId(), 'rol_id' => $rolGerente->getId(), 'prioridad' => 2],
-            ['tienda_id' => $tiendaNorte->getId(), 'rol_id' => $rolGerente->getId(), 'prioridad' => 1],
-            ['tienda_id' => $tiendaNorte->getId(), 'rol_id' => $rolCajero->getId(), 'prioridad' => 2],
+            ['sucursal_id' => $sucursalCentro->getId(), 'rol_id' => $rolPanadero->getId(), 'prioridad' => 1],
+            ['sucursal_id' => $sucursalCentro->getId(), 'rol_id' => $rolGerente->getId(), 'prioridad' => 2],
+            ['sucursal_id' => $sucursalNorte->getId(), 'rol_id' => $rolGerente->getId(), 'prioridad' => 1],
+            ['sucursal_id' => $sucursalNorte->getId(), 'rol_id' => $rolCajero->getId(), 'prioridad' => 2],
         ], array_map(
-            static fn (array $r): array => ['tienda_id' => (int) $r['tienda_id'], 'rol_id' => (int) $r['rol_id'], 'prioridad' => (int) $r['prioridad']],
+            static fn (array $r): array => ['sucursal_id' => (int) $r['sucursal_id'], 'rol_id' => (int) $r['rol_id'], 'prioridad' => (int) $r['prioridad']],
             $rolesGuardados,
         ));
     }
 
-    public function testCrearPersonalSinTiendasNiRoles(): void
+    public function testCrearPersonalSinSucursalesNiRoles(): void
     {
         $client = static::createClient();
         $usuario = $this->crearUsuario($this->uniqueEmail('pers_min'));
@@ -220,49 +220,49 @@ final class PersonalControllerTest extends WebTestCase
         self::assertStringContainsString('48 h/sem', (string) $client->getResponse()->getContent());
     }
 
-    public function testRechazaRolQueNoPerteneceALaTiendaSeleccionada(): void
+    public function testRechazaRolQueNoPerteneceALaSucursalSeleccionada(): void
     {
         $client = static::createClient();
         $usuario = $this->crearUsuario($this->uniqueEmail('pers_cross'));
         $rolPanadero = $this->crearRol($usuario, 'Panadero');
         $rolCajero = $this->crearRol($usuario, 'Cajero');
-        $tiendaCentro = $this->crearTienda($usuario, 'Centro', true, [$rolPanadero]);
-        $this->crearTienda($usuario, 'Norte', true, [$rolCajero]);
+        $sucursalCentro = $this->crearSucursal($usuario, 'Centro', true, [$rolPanadero]);
+        $this->crearSucursal($usuario, 'Norte', true, [$rolCajero]);
 
         $this->login($client, $usuario->getEmail());
 
         $crawler = $client->request('GET', '/personal/nuevo');
         $form = $crawler->selectButton('Guardar')->form();
         $form['personal[nombre]'] = 'Intento Rol Cruzado';
-        $form['personal[tiendas]'][0]->tick(); // Solo Centro (que no tiene Cajero)
-        $form['personal[rolesPorTienda]'] = json_encode([
-            $tiendaCentro->getId() => [$rolCajero->getId()],
+        $form['personal[sucursales]'][0]->tick();
+        $form['personal[rolesPorSucursal]'] = json_encode([
+            $sucursalCentro->getId() => [$rolCajero->getId()],
         ]);
         $client->submit($form);
 
         self::assertResponseIsSuccessful();
-        self::assertStringContainsString('Uno de los roles seleccionados no pertenece a esa tienda.', (string) $client->getResponse()->getContent());
+        self::assertStringContainsString('Uno de los roles seleccionados no pertenece a esa sucursal.', (string) $client->getResponse()->getContent());
     }
 
-    public function testRechazaRolDeTiendaNoSeleccionada(): void
+    public function testRechazaRolDeSucursalNoSeleccionada(): void
     {
         $client = static::createClient();
-        $usuario = $this->crearUsuario($this->uniqueEmail('pers_notienda'));
+        $usuario = $this->crearUsuario($this->uniqueEmail('pers_nosuc'));
         $rolCajero = $this->crearRol($usuario, 'Cajero');
-        $tiendaCentro = $this->crearTienda($usuario, 'Centro', true, [$rolCajero]);
+        $sucursalCentro = $this->crearSucursal($usuario, 'Centro', true, [$rolCajero]);
 
         $this->login($client, $usuario->getEmail());
 
         $crawler = $client->request('GET', '/personal/nuevo');
         $form = $crawler->selectButton('Guardar')->form();
-        $form['personal[nombre]'] = 'Sin Tienda Marcada';
-        $form['personal[rolesPorTienda]'] = json_encode([
-            $tiendaCentro->getId() => [$rolCajero->getId()],
+        $form['personal[nombre]'] = 'Sin Sucursal Marcada';
+        $form['personal[rolesPorSucursal]'] = json_encode([
+            $sucursalCentro->getId() => [$rolCajero->getId()],
         ]);
         $client->submit($form);
 
         self::assertResponseIsSuccessful();
-        self::assertStringContainsString('No puedes asignar roles de una tienda que no está seleccionada.', (string) $client->getResponse()->getContent());
+        self::assertStringContainsString('No puedes asignar roles de una sucursal que no está seleccionada.', (string) $client->getResponse()->getContent());
     }
 
     public function testEditarReordenaRolesEnSitioYConservaRolDesactivado(): void
@@ -272,9 +272,9 @@ final class PersonalControllerTest extends WebTestCase
         $rolA = $this->crearRol($usuario, 'Cajero', true);
         $rolB = $this->crearRol($usuario, 'Encargado', true);
         $rolInactivo = $this->crearRol($usuario, 'Rol legado', false);
-        $tienda = $this->crearTienda($usuario, 'Centro', true, [$rolA, $rolB, $rolInactivo]);
-        $persona = $this->crearPersonal($usuario, 'Sofía Ruiz', true, [$tienda], [
-            ['tienda' => $tienda, 'roles' => [$rolA, $rolB, $rolInactivo]],
+        $sucursal = $this->crearSucursal($usuario, 'Centro', true, [$rolA, $rolB, $rolInactivo]);
+        $persona = $this->crearPersonal($usuario, 'Sofía Ruiz', true, [$sucursal], [
+            ['sucursal' => $sucursal, 'roles' => [$rolA, $rolB, $rolInactivo]],
         ]);
         $connection = static::getContainer()->get(EntityManagerInterface::class)->getConnection();
 
@@ -287,22 +287,22 @@ final class PersonalControllerTest extends WebTestCase
         // Invierte rolB (#1) y rolA (#2), y quita rolInactivo en un solo flush() sin colisión de índice único.
         $form = $crawler->selectButton('Guardar')->form();
         $form['personal[nombre]'] = 'Sofía Ruiz Actualizada';
-        $form['personal[rolesPorTienda]'] = json_encode([
-            $tienda->getId() => [$rolB->getId(), $rolA->getId()],
+        $form['personal[rolesPorSucursal]'] = json_encode([
+            $sucursal->getId() => [$rolB->getId(), $rolA->getId()],
         ]);
         $client->submit($form);
 
         self::assertResponseRedirects('/personal');
 
         $rolesGuardados = $connection->fetchAllAssociative(
-            'SELECT tienda_id, rol_id, prioridad FROM personal_rol WHERE personal_id = ? ORDER BY prioridad ASC',
+            'SELECT sucursal_id, rol_id, prioridad FROM personal_rol WHERE personal_id = ? ORDER BY prioridad ASC',
             [$persona->getId()],
         );
         self::assertSame([
-            ['tienda_id' => $tienda->getId(), 'rol_id' => $rolB->getId(), 'prioridad' => 1],
-            ['tienda_id' => $tienda->getId(), 'rol_id' => $rolA->getId(), 'prioridad' => 2],
+            ['sucursal_id' => $sucursal->getId(), 'rol_id' => $rolB->getId(), 'prioridad' => 1],
+            ['sucursal_id' => $sucursal->getId(), 'rol_id' => $rolA->getId(), 'prioridad' => 2],
         ], array_map(
-            static fn (array $r): array => ['tienda_id' => (int) $r['tienda_id'], 'rol_id' => (int) $r['rol_id'], 'prioridad' => (int) $r['prioridad']],
+            static fn (array $r): array => ['sucursal_id' => (int) $r['sucursal_id'], 'rol_id' => (int) $r['rol_id'], 'prioridad' => (int) $r['prioridad']],
             $rolesGuardados,
         ));
     }

@@ -1,41 +1,41 @@
 import { Controller } from '@hotwired/stimulus';
 
 /*
- * Muestra/oculta el panel de roles de cada tienda marcada y gestiona la prioridad
- * (#1 = mayor peso) de los roles dentro de cada tienda, serializando el mapa
- * { tiendaId: [rolId, ...] } en el campo oculto del formulario.
+ * Muestra/oculta el panel de roles de cada sucursal marcada y gestiona la prioridad
+ * (#1 = mayor peso) de los roles dentro de cada sucursal, serializando el mapa
+ * { sucursalId: [rolId, ...] } en el campo oculto del formulario.
  */
 export default class extends Controller {
-    static targets = ['input', 'panel', 'sinTiendas'];
+    static targets = ['input', 'panel', 'sinSucursales'];
 
     connect() {
-        this.actualizarTiendas();
+        this.actualizarSucursales();
     }
 
-    actualizarTiendas() {
+    actualizarSucursales() {
         const seleccionadas = new Set(
-            Array.from(this.element.querySelectorAll('input[data-tienda-checkbox]:checked'))
+            Array.from(this.element.querySelectorAll('input[data-sucursal-checkbox]:checked'))
                 .map((checkbox) => checkbox.value),
         );
 
         let visibles = 0;
         this.panelTargets.forEach((panel) => {
-            const activo = seleccionadas.has(panel.dataset.tiendaPanelId);
+            const activo = seleccionadas.has(panel.dataset.sucursalPanelId);
             panel.classList.toggle('d-none', !activo);
             if (activo) {
                 visibles += 1;
             }
         });
 
-        if (this.hasSinTiendasTarget) {
-            this.sinTiendasTarget.classList.toggle('d-none', visibles > 0);
+        if (this.hasSinSucursalesTarget) {
+            this.sinSucursalesTarget.classList.toggle('d-none', visibles > 0);
         }
 
         this.sincronizar();
     }
 
     agregar(event) {
-        const panel = event.currentTarget.closest('[data-tienda-panel-id]');
+        const panel = event.currentTarget.closest('[data-sucursal-panel-id]');
         const item = event.currentTarget.closest('[data-rol-id]');
         const asignados = panel?.querySelector('[data-lista-asignados]');
         if (!panel || !item || !asignados) {
@@ -47,7 +47,7 @@ export default class extends Controller {
     }
 
     quitar(event) {
-        const panel = event.currentTarget.closest('[data-tienda-panel-id]');
+        const panel = event.currentTarget.closest('[data-sucursal-panel-id]');
         const item = event.currentTarget.closest('[data-rol-id]');
         const disponibles = panel?.querySelector('[data-lista-disponibles]');
         if (!panel || !item || !disponibles) {
@@ -60,7 +60,7 @@ export default class extends Controller {
     }
 
     subir(event) {
-        const panel = event.currentTarget.closest('[data-tienda-panel-id]');
+        const panel = event.currentTarget.closest('[data-sucursal-panel-id]');
         const item = event.currentTarget.closest('[data-rol-id]');
         const asignados = panel?.querySelector('[data-lista-asignados]');
         if (!asignados || !item || !item.previousElementSibling) {
@@ -72,7 +72,7 @@ export default class extends Controller {
     }
 
     bajar(event) {
-        const panel = event.currentTarget.closest('[data-tienda-panel-id]');
+        const panel = event.currentTarget.closest('[data-sucursal-panel-id]');
         const item = event.currentTarget.closest('[data-rol-id]');
         const asignados = panel?.querySelector('[data-lista-asignados]');
         if (!asignados || !item || !item.nextElementSibling) {
@@ -93,7 +93,7 @@ export default class extends Controller {
         const mapa = {};
 
         this.panelTargets.forEach((panel) => {
-            const tiendaId = panel.dataset.tiendaPanelId;
+            const sucursalId = panel.dataset.sucursalPanelId;
             const visible = !panel.classList.contains('d-none');
             const asignadosCont = panel.querySelector('[data-lista-asignados]');
             const disponiblesCont = panel.querySelector('[data-lista-disponibles]');
@@ -138,7 +138,7 @@ export default class extends Controller {
             }
 
             if (visible && ids.length > 0) {
-                mapa[tiendaId] = ids;
+                mapa[sucursalId] = ids;
             }
         });
 

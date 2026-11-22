@@ -2,17 +2,17 @@
 
 namespace App\Entity;
 
-use App\Repository\TiendaRepository;
+use App\Repository\SucursalRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: TiendaRepository::class)]
-#[ORM\UniqueConstraint(name: 'UNIQ_TIENDA_NOMBRE', columns: ['usuario_id', 'nombre'])]
-#[ORM\UniqueConstraint(name: 'UNIQ_TIENDA_CODIGO', columns: ['usuario_id', 'codigo'])]
+#[ORM\Entity(repositoryClass: SucursalRepository::class)]
+#[ORM\UniqueConstraint(name: 'UNIQ_SUCURSAL_NOMBRE', columns: ['usuario_id', 'nombre'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_SUCURSAL_CODIGO', columns: ['usuario_id', 'codigo'])]
 #[ORM\HasLifecycleCallbacks]
-class Tienda
+class Sucursal
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -36,7 +36,7 @@ class Tienda
      * @var Collection<int, Rol>
      */
     #[ORM\ManyToMany(targetEntity: Rol::class)]
-    #[ORM\JoinTable(name: 'tienda_rol')]
+    #[ORM\JoinTable(name: 'sucursal_rol')]
     #[ORM\OrderBy(['nombre' => 'ASC'])]
     private Collection $roles;
 

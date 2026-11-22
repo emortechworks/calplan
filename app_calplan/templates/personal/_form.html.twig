@@ -22,13 +22,13 @@
     <div class="mb-3 mt-2">
       <label class="form-label mb-1 fw-semibold d-flex align-items-center gap-1">
         {{ ux_icon('bi:shop') }}
-        <span>Tiendas asignadas</span>
+        <span>Sucursales asignadas</span>
       </label>
-      {{ form_errors(form.tiendas) }}
-      {% if form.tiendas|length > 0 %}
+      {{ form_errors(form.sucursales) }}
+      {% if form.sucursales|length > 0 %}
         <div class="d-flex flex-wrap gap-2 mt-1">
-          {% for child in form.tiendas %}
-            {{ form_widget(child, { attr: { class: 'btn-check', autocomplete: 'off', 'data-tienda-checkbox': 'true', 'data-action': 'change->roles-ordenados#actualizarTiendas' } }) }}
+          {% for child in form.sucursales %}
+            {{ form_widget(child, { attr: { class: 'btn-check', autocomplete: 'off', 'data-sucursal-checkbox': 'true', 'data-action': 'change->roles-ordenados#actualizarSucursales' } }) }}
             <label class="btn btn-outline-dark btn-sm d-inline-flex align-items-center gap-1" for="{{ child.vars.id }}">
               {{ ux_icon('bi:shop') }}
               <span>{{ child.vars.label }}</span>
@@ -36,9 +36,9 @@
           {% endfor %}
         </div>
       {% else %}
-        {% do form.tiendas.setRendered %}
+        {% do form.sucursales.setRendered %}
         <p class="small text-body-secondary mb-0">
-          Aún no tienes tiendas activas. <a href="{{ path('app_tienda_nueva') }}">Crea una tienda</a> o guarda sin tienda por ahora.
+          Aún no tienes sucursales activas. <a href="{{ path('app_sucursal_nueva') }}">Crea una sucursal</a> o guarda sin sucursal por ahora.
         </p>
       {% endif %}
     </div>
@@ -46,41 +46,41 @@
     <div class="mb-3">
       <label class="form-label mb-1 fw-semibold d-flex align-items-center gap-1">
         {{ ux_icon('bi:person-badge') }}
-        <span>Roles y prioridad por tienda</span>
+        <span>Roles y prioridad por sucursal</span>
       </label>
       <p class="small text-body-secondary mb-2">
-        Cada tienda seleccionada despliega únicamente sus roles disponibles. Dentro de cada tienda, <strong>#1</strong> tiene el mayor peso (principal), seguido de <strong>#2</strong>, <strong>#3</strong>…
+        Cada sucursal seleccionada despliega únicamente sus roles disponibles. Dentro de cada sucursal, <strong>#1</strong> tiene el mayor peso (principal), seguido de <strong>#2</strong>, <strong>#3</strong>…
       </p>
-      {{ form_widget(form.rolesPorTienda, { attr: { 'data-roles-ordenados-target': 'input' } }) }}
-      {{ form_errors(form.rolesPorTienda) }}
+      {{ form_widget(form.rolesPorSucursal, { attr: { 'data-roles-ordenados-target': 'input' } }) }}
+      {{ form_errors(form.rolesPorSucursal) }}
 
-      <div data-roles-ordenados-target="sinTiendas" class="alert alert-light border small text-body-secondary mb-0">
-        Selecciona al menos una tienda arriba para desplegar y priorizar sus roles.
+      <div data-roles-ordenados-target="sinSucursales" class="alert alert-light border small text-body-secondary mb-0">
+        Selecciona al menos una sucursal arriba para desplegar y priorizar sus roles.
       </div>
 
       <div class="d-flex flex-column gap-3 mt-2">
-        {% for panel in panelesPorTienda %}
-          {% set tienda = panel.tienda %}
-          <div class="card {{ not panel.visible ? 'd-none' }}" data-roles-ordenados-target="panel" data-tienda-panel-id="{{ tienda.id }}">
+        {% for panel in panelesPorSucursal %}
+          {% set sucursal = panel.sucursal %}
+          <div class="card {{ not panel.visible ? 'd-none' }}" data-roles-ordenados-target="panel" data-sucursal-panel-id="{{ sucursal.id }}">
             <div class="card-header bg-body-tertiary d-flex align-items-center justify-content-between gap-2">
               <span class="fw-semibold d-inline-flex align-items-center gap-1">
                 {{ ux_icon('bi:shop') }}
-                <span>{{ tienda.nombre }}</span>
-                {% if not tienda.activa %}<span class="badge text-bg-warning">desactivada</span>{% endif %}
+                <span>{{ sucursal.nombre }}</span>
+                {% if not sucursal.activa %}<span class="badge text-bg-warning">desactivada</span>{% endif %}
               </span>
-              <a class="small text-decoration-none" href="{{ path('app_tienda_editar', { id: tienda.id }) }}">Configurar roles de la tienda</a>
+              <a class="small text-decoration-none" href="{{ path('app_sucursal_editar', { id: sucursal.id }) }}">Configurar roles de la sucursal</a>
             </div>
             <div class="card-body">
               {% if panel.rolesAsignados|length == 0 and panel.rolesDisponibles|length == 0 %}
                 <p class="small text-body-secondary mb-0">
-                  Esta tienda todavía no tiene roles habilitados.
-                  <a href="{{ path('app_tienda_editar', { id: tienda.id }) }}">Agrega roles a {{ tienda.nombre }}</a>.
+                  Esta sucursal todavía no tiene roles habilitados.
+                  <a href="{{ path('app_sucursal_editar', { id: sucursal.id }) }}">Agrega roles a {{ sucursal.nombre }}</a>.
                 </p>
               {% else %}
                 <div class="border rounded p-2 mb-2 bg-body-tertiary">
-                  <div class="small fw-semibold text-body-secondary mb-2">Roles asignados en {{ tienda.nombre }} (de mayor a menor peso)</div>
+                  <div class="small fw-semibold text-body-secondary mb-2">Roles asignados en {{ sucursal.nombre }} (de mayor a menor peso)</div>
                   <div data-lista-vacio class="small text-body-secondary {{ panel.rolesAsignados|length > 0 ? 'd-none' }}">
-                    Sin roles asignados en esta tienda. Agrega alguno desde la lista de abajo.
+                    Sin roles asignados en esta sucursal. Agrega alguno desde la lista de abajo.
                   </div>
                   <div class="d-flex flex-column gap-2" data-lista-asignados>
                     {% for rol in panel.rolesAsignados %}
@@ -118,7 +118,7 @@
                 </div>
 
                 <div class="border rounded p-2">
-                  <div class="small fw-semibold text-body-secondary mb-2">Roles disponibles en {{ tienda.nombre }}</div>
+                  <div class="small fw-semibold text-body-secondary mb-2">Roles disponibles en {{ sucursal.nombre }}</div>
                   <div class="d-flex flex-column gap-2" data-lista-disponibles>
                     {% for rol in panel.rolesDisponibles %}
                       <div class="border rounded bg-white p-2 d-flex justify-content-between align-items-center gap-2" data-rol-id="{{ rol.id }}" data-rol-nombre="{{ rol.nombre }}">

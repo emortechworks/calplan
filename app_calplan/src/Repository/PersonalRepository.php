@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Personal;
-use App\Entity\Tienda;
+use App\Entity\Sucursal;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -21,12 +21,12 @@ class PersonalRepository extends ServiceEntityRepository
     /**
      * @return Personal[] activos primero, luego por nombre
      */
-    public function delUsuario(User $usuario, ?Tienda $tienda = null): array
+    public function delUsuario(User $usuario, ?Sucursal $sucursal = null): array
     {
         $qb = $this->createQueryBuilder('p')
-            ->leftJoin('p.tiendas', 't')->addSelect('t')
+            ->leftJoin('p.sucursales', 's')->addSelect('s')
             ->leftJoin('p.personalRoles', 'pr')->addSelect('pr')
-            ->leftJoin('pr.tienda', 'prt')->addSelect('prt')
+            ->leftJoin('pr.sucursal', 'prs')->addSelect('prs')
             ->leftJoin('pr.rol', 'r')->addSelect('r')
             ->andWhere('p.usuario = :usuario')
             ->setParameter('usuario', $usuario)
@@ -34,9 +34,9 @@ class PersonalRepository extends ServiceEntityRepository
             ->addOrderBy('p.nombre', 'ASC')
             ->addOrderBy('pr.prioridad', 'ASC');
 
-        if ($tienda !== null) {
-            $qb->andWhere(':tiendaFiltro MEMBER OF p.tiendas')
-                ->setParameter('tiendaFiltro', $tienda);
+        if ($sucursal !== null) {
+            $qb->andWhere(':sucursalFiltro MEMBER OF p.sucursales')
+                ->setParameter('sucursalFiltro', $sucursal);
         }
 
         return $qb->getQuery()->getResult();

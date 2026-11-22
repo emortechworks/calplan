@@ -6,23 +6,24 @@
 - [002 · Hero para inicio](features/002-hero-inicio/) — página `/` con hero Bootstrap por defecto y CTA deshabilitado "Autenticación próximamente" ([spec](features/002-hero-inicio/spec.md))
 - [003 · JavaScript sin CDN](features/003-javascript-sin-cdn/) — elimina el bloque FrankenPHP y fija la regla "sin recursos externos" en la constitución ([spec](features/003-javascript-sin-cdn/spec.md))
 - [004 · Autenticación local](features/004-autenticacion-local/) — registro + login + logout, `/cuenta` protegida, reset de contraseña por CLI ([spec](features/004-autenticacion-local/spec.md))
-- [005 · Tiendas](features/005-tiendas/) — CRUD de tiendas del usuario: crear/editar/alternar (borrado lógico), validación de unicidad (usuario+nombre, usuario+código) + tests ([spec](features/005-tiendas/spec.md))
+- [005 · Tiendas](features/005-tiendas/) — CRUD inicial de sucursales (entonces *tiendas*) del usuario: crear/editar/alternar (borrado lógico), validación de unicidad + tests ([spec](features/005-tiendas/spec.md))
 - [006 · Íconos de Bootstrap locales (UX Icons)](features/006-bootstrap-icons/) — `symfony/ux-icons` en modo estrictamente local (`iconify.on_demand: false`), `bi:calendar-week` inline en la navbar + tests ([spec](features/006-bootstrap-icons/spec.md))
 - [007 · Roles](features/007-roles/) — CRUD del catálogo de roles del usuario (`nombre` único por usuario, `descripcion` opcional, `activo` borrado lógico), enlace en navbar + tests ([spec](features/007-roles/spec.md))
 - [008 · Regla de dependencias en el spec](features/008-regla-dependencias/) — fija la verificación y reordenamiento automático de features por dependencias en `spec/README.md`, `roadmap.md` y `spec_template/` ([spec](features/008-regla-dependencias/spec.md))
-- [009 · Personal](features/009-personal/) — CRUD de personal del usuario (`nombre`, `horasSemanales`, `fechaNacimiento`, `finContrato`, `activo`), `ManyToMany` con tiendas (`btn-check`), roles ordenados por prioridad (`PersonalRol` + Stimulus), filtro por tienda + tests ([spec](features/009-personal/spec.md))
-- [010 · Roles por tienda](features/010-roles-por-tienda/) — relación `ManyToMany` `Tienda ↔ Rol` (`tienda_rol`) con chips `btn-check` en `/tiendas` y prioridades de rol separadas por tienda en `/personal` (`PersonalRol` con `tienda_id` + paneles dinámicos Stimulus) + tests ([spec](features/010-roles-por-tienda/spec.md))
+- [009 · Personal](features/009-personal/) — CRUD de personal del usuario (`nombre`, `horasSemanales`, `fechaNacimiento`, `finContrato`, `activo`), `ManyToMany` con sucursales (`btn-check`), roles ordenados por prioridad (`PersonalRol` + Stimulus), filtro por sucursal + tests ([spec](features/009-personal/spec.md))
+- [010 · Roles por tienda](features/010-roles-por-tienda/) — relación `ManyToMany` `Sucursal ↔ Rol` (`sucursal_rol`) con chips `btn-check` y prioridades de rol separadas por sucursal en `/personal` (`PersonalRol` + paneles dinámicos Stimulus) + tests ([spec](features/010-roles-por-tienda/spec.md))
+- [011 · Renombrar Tienda a Sucursal](features/011-renombrar-sucursal/) — renombre integral de `Tienda` → `Sucursal` en BD (`RENAME TABLE` preservando datos), código PHP, rutas `/sucursales`, vistas Twig, Stimulus, tests y constitución ([spec](features/011-renombrar-sucursal/spec.md))
 
 ## Siguiente 🔜
 
-- 011 · Perfil del personal — catálogo configurable de atributos de cualidades por usuario (`escala` 1–5, `booleano`, `lista`, `numero`, `texto`; con `peso` 0–5, `orden`, borrado lógico y sugeridos iniciales: Velocidad, Fuerza, Puntualidad, Confiabilidad, Sexo) + valores opcionales por persona. Dependencias: `Personal` (009).
+- 012 · Perfil del personal — catálogo configurable de atributos de cualidades por usuario (`escala` 1–5, `booleano`, `lista`, `numero`, `texto`; con `peso` 0–5, `orden`, borrado lógico y sugeridos iniciales: Velocidad, Fuerza, Puntualidad, Confiabilidad, Sexo) + valores opcionales por persona. Dependencias: `Personal` (009).
 
 ## Backlog / ideas 💡 (orden de dependencias)
 
-- 012 · Incidencias y peticiones — vacaciones, descanso semanal, cumpleaños, incapacidad, cursos, repuestos/apoyos; fecha + tipo + personal. Alimentan la contabilidad de horas a la semana. Dependencias: `Personal` (009).
-- 013 · Propuesta semanal — formulario (tienda + período + personal seleccionado) + generación usando pesos del perfil, prioridades de rol por tienda y reglas por día/tienda: días de trabajo/descanso, horario de comida cubierto por otro encargado de área, horas/semana menos incidencias y alertas de fin de contrato/cumpleaños. Dependencias: `Tienda` (005), `Roles` (007), `Personal` (009), `Roles por tienda` (010), `Perfil` (011), `Incidencias` (012).
-- 014 · Tabla semanal coloreada — vista de la propuesta coloreada por trabajador. Dependencias: `Propuesta semanal` (013).
-- 015 · Exportar / compartir — PDF / CSV / Sheets / Excel (decidir formato al llegar). Dependencias: `Propuesta semanal` (013) / `Tabla` (014).
+- 013 · Incidencias y peticiones — vacaciones, descanso semanal, cumpleaños, incapacidad, cursos, repuestos/apoyos; fecha + tipo + personal. Alimentan la contabilidad de horas a la semana. Dependencias: `Personal` (009).
+- 014 · Propuesta semanal — formulario (sucursal + período + personal seleccionado) + generación usando pesos del perfil, prioridades de rol por sucursal y reglas por día/sucursal: días de trabajo/descanso, horario de comida cubierto por otro encargado de área, horas/semana menos incidencias y alertas de fin de contrato/cumpleaños. Dependencias: `Sucursal` (005 / 011), `Roles` (007), `Personal` (009), `Roles por sucursal` (010 / 011), `Perfil` (012), `Incidencias` (013).
+- 015 · Tabla semanal coloreada — vista de la propuesta coloreada por trabajador. Dependencias: `Propuesta semanal` (014).
+- 016 · Exportar / compartir — PDF / CSV / Sheets / Excel (decidir formato al llegar). Dependencias: `Propuesta semanal` (014) / `Tabla` (015).
 
 > Cada feature nueva se crea como `features/NNN-nombre-feature/` con `spec.md`, `plan.md` y `tasks.md` antes de tocar código.
 > **Regla de dependencias:** toda feature solo puede depender de números menores ya en **Hecho ✅**. Si al planear un incremento se detecta una dependencia pendiente posterior, primero se reordena y renumera el backlog (nunca lo ya en **Hecho ✅**) para implementar antes el prerrequisito.

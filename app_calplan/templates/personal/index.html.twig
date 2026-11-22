@@ -14,14 +14,14 @@
   </a>
 </div>
 
-{% if tiendas|length > 0 %}
+{% if sucursales|length > 0 %}
   <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
-    <span class="small text-body-secondary">Filtrar por tienda:</span>
-    <a class="btn btn-sm {{ tiendaFiltro is null ? 'btn-dark' : 'btn-outline-secondary' }}" href="{{ path('app_personal_index') }}">Todas</a>
-    {% for tienda in tiendas %}
-      <a class="btn btn-sm {{ tiendaFiltro and tiendaFiltro.id == tienda.id ? 'btn-dark' : 'btn-outline-secondary' }} d-inline-flex align-items-center gap-1" href="{{ path('app_personal_index', { tienda: tienda.id }) }}">
+    <span class="small text-body-secondary">Filtrar por sucursal:</span>
+    <a class="btn btn-sm {{ sucursalFiltro is null ? 'btn-dark' : 'btn-outline-secondary' }}" href="{{ path('app_personal_index') }}">Todas</a>
+    {% for sucursal in sucursales %}
+      <a class="btn btn-sm {{ sucursalFiltro and sucursalFiltro.id == sucursal.id ? 'btn-dark' : 'btn-outline-secondary' }} d-inline-flex align-items-center gap-1" href="{{ path('app_personal_index', { sucursal: sucursal.id }) }}">
         {{ ux_icon('bi:shop') }}
-        <span>{{ tienda.nombre }}</span>
+        <span>{{ sucursal.nombre }}</span>
       </a>
     {% endfor %}
   </div>
@@ -53,16 +53,16 @@
           {% if not persona.activo %}<span class="badge text-bg-warning">desactivado</span>{% endif %}
         </div>
 
-        {% if persona.tiendas|length > 0 %}
+        {% if persona.sucursales|length > 0 %}
           <div class="d-flex flex-column gap-1 mt-2">
-            {% for tienda in persona.tiendas %}
-              {% set rolesTienda = persona.rolesDeTienda(tienda) %}
+            {% for sucursal in persona.sucursales %}
+              {% set rolesSucursal = persona.rolesDeSucursal(sucursal) %}
               <div class="d-flex flex-wrap align-items-center gap-1">
                 <span class="badge text-bg-light border text-secondary d-inline-flex align-items-center gap-1">
                   {{ ux_icon('bi:shop') }}
-                  <span>{{ tienda.nombre }}</span>
+                  <span>{{ sucursal.nombre }}</span>
                 </span>
-                {% for asignacion in rolesTienda %}
+                {% for asignacion in rolesSucursal %}
                   <span class="badge {{ asignacion.prioridad == 1 ? 'text-bg-dark' : 'text-bg-secondary' }} d-inline-flex align-items-center gap-1">
                     <span>#{{ asignacion.prioridad }}</span>
                     <span>{{ asignacion.rol.nombre }}</span>
@@ -96,8 +96,8 @@
   </div>
 {% else %}
   <p class="text-body-secondary">
-    {% if tiendaFiltro %}
-      No hay personal asignado a <strong>{{ tiendaFiltro.nombre }}</strong>.
+    {% if sucursalFiltro %}
+      No hay personal asignado a <strong>{{ sucursalFiltro.nombre }}</strong>.
       <a href="{{ path('app_personal_index') }}">Ver todo el personal</a>.
     {% else %}
       Aún no tienes personal registrado. <a href="{{ path('app_personal_nuevo') }}">Registra el primero</a>.
