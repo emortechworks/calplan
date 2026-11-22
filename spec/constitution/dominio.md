@@ -22,12 +22,12 @@ _Modelo de datos del negocio. Entidades centrales, relaciones y reglas no obvias
   - `fechaNacimiento`: opcional (`nullable`); alimenta alertas/incidencias de cumpleaños.
   - `finContrato`: opcional (`nullable`); alerta de vencimiento durante la planeación semanal.
   - `activo`: borrado lógico (default `true`), igual que `Tienda`.
-- **Roles y aptitudes:** se sirve del catálogo ampliable de `Rol` (`007`) para indicar qué roles puede y cuáles no desempeñar (sin campo `rol base` fijo).
-- **Perfil flexible:** cualidades descriptivas definibles por el usuario (`009`); no van en columnas fijas.
+- **Roles y aptitudes:** se sirve del catálogo ampliable de `Rol` (`007`) mediante asignación ordenada con prioridad/peso (`PersonalRol`, `#1` = mayor peso / rol principal, `#2`, `#3`… secundarios; roles ausentes = no los desempeña).
+- **Perfil flexible:** cualidades descriptivas definibles por el usuario (`010`); no van en columnas fijas.
 
 ### Rol / Asignación
-- Catálogo ampliable de roles propiedad del `Usuario` (`007`): gerente titular, gerente suplente, encargado de área, otros (con borrado lógico).
-- Por miembro del personal (`008`): qué roles del catálogo **puede** y cuáles **no** desempeñar (algunos los hacen "no siempre"; algunos no pueden ciertos roles). Una misma persona puede cubrir varios según necesidad.
+- Catálogo ampliable de roles propiedad del `Usuario` (`007`): `nombre` único por usuario, `descripcion` opcional y `activo` (borrado lógico).
+- Por miembro del personal (`009`): relación ordenada con `Rol` (`PersonalRol` con `prioridad` `1, 2, 3…`, donde `#1` tiene el mayor peso y los siguientes pesos decrecientes); los roles ausentes son los que no desempeña.
 
 ### Atributo de perfil (clave-valor)
 - Catálogo de atributos de cualidades propiedad del `Usuario` (compartido entre todas sus tiendas), con borrado lógico (`activo`) para no perder valores históricos.
@@ -35,7 +35,7 @@ _Modelo de datos del negocio. Entidades centrales, relaciones y reglas no obvias
   - `nombre` (único por usuario).
   - `tipo`: `escala` (1–5), `booleano` (Sí/No), `lista` (select con `opciones`), `numero` o `texto` corto. No se permite cambiar de `tipo` una vez tiene valores capturados.
   - `opciones`: lista cerrada de valores (solo cuando `tipo = lista`).
-  - `peso`: importancia global para el algoritmo de propuesta semanal (`0` = solo informativo, `1–5` = prioridad; en `011` se complementa con reglas por día/tienda).
+  - `peso`: importancia global para el algoritmo de propuesta semanal (`0` = solo informativo, `1–5` = prioridad; en `012` se complementa con reglas por día/tienda).
   - `orden`: orden personalizable en pantalla.
 - **Valores por persona (`ValorPerfil`):** todos los atributos del perfil son **opcionales** al dar de alta o editar personal.
 - **Catálogo inicial sugerido** (editable/desactivable al crear cuenta o mediante acción "Cargar sugeridos"):

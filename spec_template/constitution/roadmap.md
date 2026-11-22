@@ -23,3 +23,4 @@ _Sin comprometer ni ordenar del todo. Ideas que respetan la constitución._
 - **<Nombre>** — <qué aportaría>.
 
 > Cada feature nueva se crea como `features/NNN-nombre-feature/` con `spec.md`, `plan.md` y `tasks.md` antes de tocar código.
+> **Regla de dependencias:** cada feature declara sus dependencias y solo puede depender de números menores ya en **Hecho ✅**. Si se detecta una dependencia pendiente posterior, primero se reordena y renumera el backlog (nunca lo ya en **Hecho ✅**).

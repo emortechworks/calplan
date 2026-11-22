@@ -21,10 +21,19 @@ spec/
 
 _La constitución puede ser un único archivo si el proyecto es pequeño; cada feature también puede ser un único archivo. Divídelo cuando crezca._
 
+## Regla de orden por dependencias
+
+Antes de iniciar cualquier feature (o al añadirla al backlog), se identifican las entidades, catálogos o capacidades de las que depende:
+
+- Cada feature declara sus **Dependencias** en `constitution/roadmap.md` y en su `spec.md`.
+- Si una feature depende de otra que aún no está en **Hecho ✅** (o que figura después en el backlog), **primero se reordena y renumera el backlog** para colocar el prerrequisito antes del incremento dependiente.
+- Nunca se renumeran features ya en **Hecho ✅**; si existe un ciclo entre dos features, se extrae la base común a una feature previa independiente.
+
 ## Flujo para una feature nueva
 
+0. Verificar dependencias contra `constitution/roadmap.md`; si falta un prerrequisito, reordenar el roadmap antes de empezar.
 1. Crear `features/NNN-nombre-feature/` con el siguiente número libre (`001`, `002`, …).
-2. Escribir `spec.md`: qué hace, por qué y criterios de aceptación medibles.
+2. Escribir `spec.md`: qué hace, por qué, dependencias y criterios de aceptación medibles.
 3. Escribir `plan.md`: enfoque técnico y decisiones, respetando `constitution/tech-stack.md`.
 4. Desglosar en `tasks.md` y marcar el progreso.
 5. Implementar y validar (build/tests/lint o lo que defina la constitución).

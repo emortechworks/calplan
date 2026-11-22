@@ -2,6 +2,12 @@
 
 **Estado:** <propuesta | en curso | implementado ✅>
 
+## Dependencias
+
+_<Features previas (ya en **Hecho ✅** en `constitution/roadmap.md`) de las que depende este incremento, o "Ninguna". Si depende de una feature aún pendiente, reordenar primero el roadmap antes de iniciar esta.>_
+
+- <`NNN · Nombre` / Ninguna>
+
 ## Qué hace
 
 <Descripción clara y breve de la funcionalidad desde el punto de vista del usuario: qué podrá hacer o ver. Sin detalles de implementación (eso va en `plan.md`).>
