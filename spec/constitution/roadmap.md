@@ -8,14 +8,14 @@
 - [004 · Autenticación local](features/004-autenticacion-local/) — registro + login + logout, `/cuenta` protegida, reset de contraseña por CLI ([spec](features/004-autenticacion-local/spec.md))
 - [005 · Tiendas](features/005-tiendas/) — CRUD de tiendas del usuario: crear/editar/alternar (borrado lógico), validación de unicidad (usuario+nombre, usuario+código) + tests ([spec](features/005-tiendas/spec.md))
 - [006 · Íconos de Bootstrap locales (UX Icons)](features/006-bootstrap-icons/) — `symfony/ux-icons` en modo estrictamente local (`iconify.on_demand: false`), `bi:calendar-week` inline en la navbar + tests ([spec](features/006-bootstrap-icons/spec.md))
+- [007 · Roles](features/007-roles/) — CRUD del catálogo de roles del usuario (`nombre` único por usuario, `activo` borrado lógico), enlace en navbar + tests ([spec](features/007-roles/spec.md))
 
 ## Siguiente 🔜
 
-- 007 · Roles — catálogo ampliable de roles del usuario (p. ej. gerente titular, gerente suplente, encargado de área, otros; alta/edición/borrado lógico) del que se sirve el personal. Dependencias: `Autenticación` (004).
+- 008 · Personal — CRUD de personal del usuario: `nombre` completo, `horasSemanales` (default 48), `fechaNacimiento` y `finContrato` (opcionales), `activo` (borrado lógico), asignación `ManyToMany` a 0 o más tiendas propias y aptitudes desde `Roles` (qué roles puede / no puede desempeñar). Dependencias: `Tienda` (005), `Roles` (007).
 
 ## Backlog / ideas 💡 (orden de dependencias)
 
-- 008 · Personal — CRUD de personal del usuario: `nombre` completo, `horasSemanales` (default 48), `fechaNacimiento` y `finContrato` (opcionales), `activo` (borrado lógico), asignación `ManyToMany` a 0 o más tiendas propias y aptitudes desde `Roles` (qué roles puede / no puede desempeñar). Dependencias: `Tienda` (005), `Roles` (007).
 - 009 · Perfil del personal — catálogo configurable de atributos de cualidades por usuario (`escala` 1–5, `booleano`, `lista`, `numero`, `texto`; con `peso` 0–5, `orden`, borrado lógico y sugeridos iniciales: Velocidad, Fuerza, Puntualidad, Confiabilidad, Sexo) + valores opcionales por persona. Dependencias: `Personal` (008).
 - 010 · Incidencias y peticiones — vacaciones, descanso semanal, cumpleaños, incapacidad, cursos, repuestos/apoyos; fecha + tipo + personal. Alimentan la contabilidad de horas a la semana. Dependencias: `Personal` (008).
 - 011 · Propuesta semanal — formulario (tienda + período + personal seleccionado) + generación usando pesos del perfil y reglas por día/tienda: días de trabajo/descanso, horario de comida cubierto por otro encargado de área, horas/semana menos incidencias y alertas de fin de contrato/cumpleaños. Dependencias: `Tienda` (005), `Roles` (007), `Personal` (008), `Perfil` (009), `Incidencias` (010).
