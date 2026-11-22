@@ -14,7 +14,7 @@ final class IndicadorCargaTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('body[data-controller="carga"]');
         self::assertSelectorExists('#indicador-carga.d-none[data-carga-target="overlay"]');
-        self::assertSelectorExists('#indicador-carga .spinner-border[role="status"]');
+        self::assertSelectorExists('#indicador-carga [role="status"] svg');
 
         $html = (string) $client->getResponse()->getContent();
         self::assertDoesNotMatchRegularExpression('/<(?:link|script|img)\b[^>]+(?:href|src)="https?:\/\//i', $html);
