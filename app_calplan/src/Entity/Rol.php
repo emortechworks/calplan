@@ -19,6 +19,9 @@ class Rol
     #[ORM\Column(length: 120)]
     private ?string $nombre = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $descripcion = null;
+
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $usuario = null;
@@ -58,6 +61,18 @@ class Rol
     public function setNombre(string $nombre): static
     {
         $this->nombre = $nombre;
+
+        return $this;
+    }
+
+    public function getDescripcion(): ?string
+    {
+        return $this->descripcion;
+    }
+
+    public function setDescripcion(?string $descripcion): static
+    {
+        $this->descripcion = $descripcion;
 
         return $this;
     }

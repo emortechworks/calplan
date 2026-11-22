@@ -105,6 +105,10 @@ class RolController extends AbstractController
             return false;
         }
 
+        if ($rol->getDescripcion() === '') {
+            $rol->setDescripcion(null);
+        }
+
         $entityManager->persist($rol);
         $entityManager->flush();
 

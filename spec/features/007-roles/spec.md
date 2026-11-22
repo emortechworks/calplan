@@ -10,8 +10,8 @@ El catálogo de roles es la base configurable de la que se sirve `Personal` (`00
 
 ## Criterios de aceptación
 - [x] Con sesión, `/roles` lista únicamente los roles del usuario (activos primero y ordenados por nombre; desactivados atenuados con opción de reactivar). Sin sesión redirige a `/login`.
-- [x] Se puede crear un rol desde cero (`nombre` requerido, máximo 120 caracteres, único por usuario).
-- [x] Se puede editar un rol propio; intentar editar un rol ajeno devuelve `404`.
+- [x] Se puede crear un rol desde cero (`nombre` requerido, máximo 120 caracteres, único por usuario; `descripcion` opcional hasta 255 caracteres).
+- [x] Se puede editar un rol propio (nombre y descripción); intentar editar un rol ajeno devuelve `404`.
 - [x] Se puede desactivar y reactivar mediante `POST` con token CSRF (nunca se borra físicamente de la BD).
 - [x] La navbar muestra el enlace "Roles" con sesión iniciada y vistas con íconos locales UX Icons (`bi:*`, sin CDN).
 - [x] Migración Doctrine aplicada en `dev` y `test`.
@@ -19,6 +19,6 @@ El catálogo de roles es la base configurable de la que se sirve `Personal` (`00
 
 ## Fuera de alcance
 - Precarga de roles sugeridos (el usuario crea sus roles desde cero).
-- Campos adicionales (`descripcion`, `cubreComida`, color, permisos).
+- Campos adicionales (`cubreComida`, color, permisos).
 - Borrado físico.
 - Asignación de roles a personal (viene en `008 · Personal`).

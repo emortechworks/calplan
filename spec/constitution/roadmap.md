@@ -8,7 +8,7 @@
 - [004 · Autenticación local](features/004-autenticacion-local/) — registro + login + logout, `/cuenta` protegida, reset de contraseña por CLI ([spec](features/004-autenticacion-local/spec.md))
 - [005 · Tiendas](features/005-tiendas/) — CRUD de tiendas del usuario: crear/editar/alternar (borrado lógico), validación de unicidad (usuario+nombre, usuario+código) + tests ([spec](features/005-tiendas/spec.md))
 - [006 · Íconos de Bootstrap locales (UX Icons)](features/006-bootstrap-icons/) — `symfony/ux-icons` en modo estrictamente local (`iconify.on_demand: false`), `bi:calendar-week` inline en la navbar + tests ([spec](features/006-bootstrap-icons/spec.md))
-- [007 · Roles](features/007-roles/) — CRUD del catálogo de roles del usuario (`nombre` único por usuario, `activo` borrado lógico), enlace en navbar + tests ([spec](features/007-roles/spec.md))
+- [007 · Roles](features/007-roles/) — CRUD del catálogo de roles del usuario (`nombre` único por usuario, `descripcion` opcional, `activo` borrado lógico), enlace en navbar + tests ([spec](features/007-roles/spec.md))
 
 ## Siguiente 🔜
 

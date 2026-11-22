@@ -18,7 +18,7 @@ Replica el patrón ya consolidado de `005 · Tiendas`: entidad Doctrine `Rol` li
 8. Actualizar `spec/constitution/roadmap.md`, `spec/features/007-roles/{spec,plan,tasks}.md` y `spec/README.md`.
 
 ## Decisiones
-- Campos estrictamente mínimos (`nombre` y `activo`), sin `descripcion` ni precarga de roles: el gerente construye su catálogo desde cero.
+- Campos sobrios (`nombre` único por usuario, `descripcion` opcional hasta 255 caracteres y `activo`), sin precarga de roles: el gerente construye su catálogo desde cero.
 - Borrado lógico mediante `activo` para preservar integridad histórica cuando `Personal` (`008`) y `Propuesta semanal` (`011`) referencien roles.
 - Unicidad `(usuario, nombre)` validada en el controlador (error visible en el campo del formulario) y respaldada por `UniqueConstraint` en MySQL.
 

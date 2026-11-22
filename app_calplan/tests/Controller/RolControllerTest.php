@@ -91,12 +91,15 @@ final class RolControllerTest extends WebTestCase
         self::assertResponseIsSuccessful();
         $form = $crawler->selectButton('Guardar')->form();
         $form['rol[nombre]'] = 'Gerente titular';
+        $form['rol[descripcion]'] = 'Responsable general de la sucursal';
         $client->submit($form);
 
         self::assertResponseRedirects('/roles');
         $client->followRedirect();
         self::assertResponseIsSuccessful();
-        self::assertStringContainsString('Gerente titular', (string) $client->getResponse()->getContent());
+        $html = (string) $client->getResponse()->getContent();
+        self::assertStringContainsString('Gerente titular', $html);
+        self::assertStringContainsString('Responsable general de la sucursal', $html);
     }
 
     public function testNombreDuplicadoMuestraError(): void
@@ -128,12 +131,15 @@ final class RolControllerTest extends WebTestCase
         self::assertResponseIsSuccessful();
         $form = $crawler->selectButton('Guardar')->form();
         $form['rol[nombre]'] = 'Encargado de caja';
+        $form['rol[descripcion]'] = 'Supervisa cortes y cobertura de caja';
         $client->submit($form);
 
         self::assertResponseRedirects('/roles');
         $client->followRedirect();
         self::assertResponseIsSuccessful();
-        self::assertStringContainsString('Encargado de caja', (string) $client->getResponse()->getContent());
+        $html = (string) $client->getResponse()->getContent();
+        self::assertStringContainsString('Encargado de caja', $html);
+        self::assertStringContainsString('Supervisa cortes y cobertura de caja', $html);
     }
 
     public function testEditarRolAjenoDa404(): void
