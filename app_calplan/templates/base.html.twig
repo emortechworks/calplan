@@ -37,6 +37,10 @@
               {{ ux_icon('bi:person-badge') }}
               <span>Roles</span>
             </a>
+            <a class="nav-link text-white d-inline-flex align-items-center gap-1" href="{{ path('app_personal_index') }}">
+              {{ ux_icon('bi:people') }}
+              <span>Personal</span>
+            </a>
             <a class="nav-link text-white d-inline-flex align-items-center gap-1" href="{{ path('app_cuenta') }}">
               {{ ux_icon('bi:person-circle') }}
               <span>{{ app.user.userIdentifier }}</span>

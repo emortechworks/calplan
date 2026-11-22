@@ -1,0 +1,148 @@
+{{ form_errors(form) }}
+{{ form_start(form) }}
+  <div class="row g-2">
+    <div class="col-md-8 mb-1">
+      {{ form_row(form.nombre, { label_attr: { class: 'mb-1' }, attr: { class: 'form-control m-1' } }) }}
+    </div>
+    <div class="col-md-4 mb-1">
+      {{ form_row(form.horasSemanales, { label_attr: { class: 'mb-1' }, attr: { class: 'form-control m-1' } }) }}
+    </div>
+  </div>
+
+  <div class="row g-2">
+    <div class="col-md-6 mb-1">
+      {{ form_row(form.fechaNacimiento, { label_attr: { class: 'mb-1' }, attr: { class: 'form-control m-1' } }) }}
+    </div>
+    <div class="col-md-6 mb-1">
+      {{ form_row(form.finContrato, { label_attr: { class: 'mb-1' }, attr: { class: 'form-control m-1' } }) }}
+    </div>
+  </div>
+
+  <div class="mb-3 mt-2">
+    <label class="form-label mb-1 fw-semibold d-flex align-items-center gap-1">
+      {{ ux_icon('bi:shop') }}
+      <span>Tiendas asignadas</span>
+    </label>
+    {{ form_errors(form.tiendas) }}
+    {% if form.tiendas|length > 0 %}
+      <div class="d-flex flex-wrap gap-2 mt-1">
+        {% for child in form.tiendas %}
+          {{ form_widget(child, { attr: { class: 'btn-check', autocomplete: 'off' } }) }}
+          <label class="btn btn-outline-dark btn-sm d-inline-flex align-items-center gap-1" for="{{ child.vars.id }}">
+            {{ ux_icon('bi:shop') }}
+            <span>{{ child.vars.label }}</span>
+          </label>
+        {% endfor %}
+      </div>
+    {% else %}
+      {% do form.tiendas.setRendered %}
+      <p class="small text-body-secondary mb-0">
+        Aún no tienes tiendas activas. <a href="{{ path('app_tienda_nueva') }}">Crea una tienda</a> o guarda sin tienda por ahora.
+      </p>
+    {% endif %}
+  </div>
+
+  <div class="mb-3" data-controller="roles-ordenados">
+    <label class="form-label mb-1 fw-semibold d-flex align-items-center gap-1">
+      {{ ux_icon('bi:person-badge') }}
+      <span>Roles y prioridad</span>
+    </label>
+    <p class="small text-body-secondary mb-2">
+      El rol <strong>#1</strong> tiene el mayor peso (principal), seguido de <strong>#2</strong>, <strong>#3</strong>… Los roles no añadidos no los desempeña.
+    </p>
+    {{ form_widget(form.rolesOrdenados, { attr: { 'data-roles-ordenados-target': 'input' } }) }}
+    {{ form_errors(form.rolesOrdenados) }}
+
+    {% if rolesAsignados|length == 0 and rolesDisponibles|length == 0 %}
+      <p class="small text-body-secondary mb-0">
+        Aún no tienes roles activos. <a href="{{ path('app_rol_nuevo') }}">Crea el primero</a> o guarda sin roles por ahora.
+      </p>
+    {% else %}
+      <div class="border rounded p-2 mb-2 bg-body-tertiary">
+        <div class="small fw-semibold text-body-secondary mb-2">Roles asignados (de mayor a menor peso)</div>
+        <div data-roles-ordenados-target="vacio" class="small text-body-secondary {{ rolesAsignados|length > 0 ? 'd-none' }}">
+          Sin roles asignados todavía. Agrega alguno desde la lista de abajo.
+        </div>
+        <div class="d-flex flex-column gap-2" data-roles-ordenados-target="asignados">
+          {% for rol in rolesAsignados %}
+            <div class="border rounded bg-white p-2 d-flex justify-content-between align-items-center gap-2" data-rol-id="{{ rol.id }}" data-rol-nombre="{{ rol.nombre }}">
+              <div>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <span class="badge {{ loop.first ? 'text-bg-dark' : 'text-bg-secondary' }}" data-role-badge>{{ loop.first ? '#1 Principal' : '#' ~ loop.index }}</span>
+                  <span class="fw-semibold">{{ rol.nombre }}</span>
+                  {% if not rol.activo %}<span class="badge text-bg-warning">desactivado</span>{% endif %}
+                </div>
+                {% if rol.descripcion %}
+                  <div class="small text-body-secondary mt-1">{{ rol.descripcion }}</div>
+                {% endif %}
+              </div>
+              <div class="d-flex align-items-center gap-1" data-acciones-asignado>
+                <button type="button" class="btn btn-outline-secondary btn-sm p-1" title="Subir prioridad" data-btn-subir data-action="click->roles-ordenados#subir">
+                  {{ ux_icon('bi:arrow-up') }}
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm p-1" title="Bajar prioridad" data-btn-bajar data-action="click->roles-ordenados#bajar">
+                  {{ ux_icon('bi:arrow-down') }}
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm p-1" title="Quitar rol" data-action="click->roles-ordenados#quitar">
+                  {{ ux_icon('bi:x-lg') }}
+                </button>
+              </div>
+              <div class="d-none" data-acciones-disponible>
+                <button type="button" class="btn btn-outline-dark btn-sm d-inline-flex align-items-center gap-1" data-action="click->roles-ordenados#agregar">
+                  {{ ux_icon('bi:plus-lg') }}
+                  <span>Agregar</span>
+                </button>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="border rounded p-2">
+        <div class="small fw-semibold text-body-secondary mb-2">Roles disponibles</div>
+        <div class="d-flex flex-column gap-2" data-roles-ordenados-target="disponibles">
+          {% for rol in rolesDisponibles %}
+            <div class="border rounded bg-white p-2 d-flex justify-content-between align-items-center gap-2" data-rol-id="{{ rol.id }}" data-rol-nombre="{{ rol.nombre }}">
+              <div>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <span class="badge text-bg-secondary d-none" data-role-badge></span>
+                  <span class="fw-semibold">{{ rol.nombre }}</span>
+                  {% if not rol.activo %}<span class="badge text-bg-warning">desactivado</span>{% endif %}
+                </div>
+                {% if rol.descripcion %}
+                  <div class="small text-body-secondary mt-1">{{ rol.descripcion }}</div>
+                {% endif %}
+              </div>
+              <div class="d-none d-flex align-items-center gap-1" data-acciones-asignado>
+                <button type="button" class="btn btn-outline-secondary btn-sm p-1" title="Subir prioridad" data-btn-subir data-action="click->roles-ordenados#subir">
+                  {{ ux_icon('bi:arrow-up') }}
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm p-1" title="Bajar prioridad" data-btn-bajar data-action="click->roles-ordenados#bajar">
+                  {{ ux_icon('bi:arrow-down') }}
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm p-1" title="Quitar rol" data-action="click->roles-ordenados#quitar">
+                  {{ ux_icon('bi:x-lg') }}
+                </button>
+              </div>
+              <div data-acciones-disponible>
+                <button type="button" class="btn btn-outline-dark btn-sm d-inline-flex align-items-center gap-1" data-action="click->roles-ordenados#agregar">
+                  {{ ux_icon('bi:plus-lg') }}
+                  <span>Agregar</span>
+                </button>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <button type="submit" class="btn btn-dark m-2 p-2 d-inline-flex align-items-center gap-2">
+    {{ ux_icon('bi:check-lg') }}
+    <span>Guardar</span>
+  </button>
+  <a class="btn btn-outline-secondary m-2 p-2 d-inline-flex align-items-center gap-2" href="{{ path('app_personal_index') }}">
+    {{ ux_icon('bi:x-lg') }}
+    <span>Cancelar</span>
+  </a>
+{{ form_end(form) }}

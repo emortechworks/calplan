@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Personal · Calendario Planeación{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0 d-flex align-items-center gap-2">
+    {{ ux_icon('bi:people') }}
+    <span>Personal</span>
+  </h1>
+  <a class="btn btn-dark m-2 p-2 d-inline-flex align-items-center gap-2" href="{{ path('app_personal_nuevo') }}">
+    {{ ux_icon('bi:plus-lg') }}
+    <span>Nuevo personal</span>
+  </a>
+</div>
+
+{% if tiendas|length > 0 %}
+  <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
+    <span class="small text-body-secondary">Filtrar por tienda:</span>
+    <a class="btn btn-sm {{ tiendaFiltro is null ? 'btn-dark' : 'btn-outline-secondary' }}" href="{{ path('app_personal_index') }}">Todas</a>
+    {% for tienda in tiendas %}
+      <a class="btn btn-sm {{ tiendaFiltro and tiendaFiltro.id == tienda.id ? 'btn-dark' : 'btn-outline-secondary' }} d-inline-flex align-items-center gap-1" href="{{ path('app_personal_index', { tienda: tienda.id }) }}">
+        {{ ux_icon('bi:shop') }}
+        <span>{{ tienda.nombre }}</span>
+      </a>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% for persona in personal %}
+  <div class="card mb-2 {{ not persona.activo ? 'border-secondary opacity-75' }}">
+    <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+      <div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          {{ ux_icon('bi:person-circle', { class: 'text-body-secondary' }) }}
+          <span class="fw-bold">{{ persona.nombre }}</span>
+          <span class="badge text-bg-light border text-dark d-inline-flex align-items-center gap-1">
+            {{ ux_icon('bi:clock') }}
+            <span>{{ persona.horasSemanales }} h/sem</span>
+          </span>
+          {% if persona.fechaNacimiento %}
+            <span class="badge text-bg-light border text-dark d-inline-flex align-items-center gap-1">
+              {{ ux_icon('bi:gift') }}
+              <span>{{ persona.fechaNacimiento|date('d/m/Y') }}</span>
+            </span>
+          {% endif %}
+          {% if persona.finContrato %}
+            <span class="badge text-bg-light border text-dark d-inline-flex align-items-center gap-1">
+              {{ ux_icon('bi:calendar-event') }}
+              <span>Fin contrato: {{ persona.finContrato|date('d/m/Y') }}</span>
+            </span>
+          {% endif %}
+          {% if not persona.activo %}<span class="badge text-bg-warning">desactivado</span>{% endif %}
+        </div>
+
+        {% if persona.tiendas|length > 0 %}
+          <div class="d-flex flex-wrap gap-1 mt-2">
+            {% for tienda in persona.tiendas %}
+              <span class="badge text-bg-light border text-secondary d-inline-flex align-items-center gap-1">
+                {{ ux_icon('bi:shop') }}
+                <span>{{ tienda.nombre }}</span>
+              </span>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if persona.personalRoles|length > 0 %}
+          <div class="d-flex flex-wrap gap-1 mt-2">
+            {% for asignacion in persona.personalRoles %}
+              <span class="badge {{ asignacion.prioridad == 1 ? 'text-bg-dark' : 'text-bg-secondary' }} d-inline-flex align-items-center gap-1">
+                <span>#{{ asignacion.prioridad }}</span>
+                <span>{{ asignacion.rol.nombre }}</span>
+              </span>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="btn-group btn-group-sm align-self-start align-self-md-center">
+        <a class="btn btn-outline-secondary m-2 p-2 d-inline-flex align-items-center gap-1" href="{{ path('app_personal_editar', { id: persona.id }) }}">
+          {{ ux_icon('bi:pencil') }}
+          <span>Editar</span>
+        </a>
+        <form method="post" action="{{ path('app_personal_alternar', { id: persona.id }) }}" class="m-0">
+          <input type="hidden" name="_token" value="{{ csrf_token('alternar_personal' ~ persona.id) }}">
+          <button class="btn btn-outline-secondary m-2 p-2 d-inline-flex align-items-center gap-1" type="submit">
+            {% if persona.activo %}
+              {{ ux_icon('bi:slash-circle') }}
+              <span>Desactivar</span>
+            {% else %}
+              {{ ux_icon('bi:check-circle') }}
+              <span>Reactivar</span>
+            {% endif %}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% else %}
+  <p class="text-body-secondary">
+    {% if tiendaFiltro %}
+      No hay personal asignado a <strong>{{ tiendaFiltro.nombre }}</strong>.
+      <a href="{{ path('app_personal_index') }}">Ver todo el personal</a>.
+    {% else %}
+      Aún no tienes personal registrado. <a href="{{ path('app_personal_nuevo') }}">Registra el primero</a>.
+    {% endif %}
+  </p>
+{% endfor %}
+{% endblock %}

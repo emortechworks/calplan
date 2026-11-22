@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar personal · Calendario Planeación{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+  <div class="col-md-10 col-lg-8">
+    <h1 class="h3 mb-4 d-flex align-items-center gap-2">
+      {{ ux_icon('bi:pencil-square') }}
+      <span>Editar personal</span>
+    </h1>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        {% include 'personal/_form.html.twig' %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
