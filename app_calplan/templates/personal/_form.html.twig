@@ -1,11 +1,25 @@
 {{ form_errors(form) }}
 {{ form_start(form) }}
   <div class="row g-2">
-    <div class="col-md-8 mb-1">
+    <div class="col-md-6 mb-1">
       {{ form_row(form.nombre, { label_attr: { class: 'mb-1' }, attr: { class: 'form-control m-1' } }) }}
     </div>
-    <div class="col-md-4 mb-1">
+    <div class="col-md-2 mb-1">
       {{ form_row(form.horasSemanales, { label_attr: { class: 'mb-1' }, attr: { class: 'form-control m-1' } }) }}
+    </div>
+    <div class="col-md-4 mb-1" data-controller="color-preview">
+      {{ form_label(form.color, null, { label_attr: { class: 'form-label mb-1' } }) }}
+      <div class="input-group m-1">
+        <span class="input-group-text bg-white">
+          <span
+            data-color-preview-target="muestra"
+            class="d-inline-block rounded-circle border border-secondary-subtle"
+            style="width: 1.1rem; height: 1.1rem; background-color: {{ form.color.vars.value|default('#ffffff') }};"
+          ></span>
+        </span>
+        {{ form_widget(form.color, { attr: { class: 'form-select', 'data-color-preview-target': 'select', 'data-action': 'change->color-preview#actualizar' } }) }}
+      </div>
+      {{ form_errors(form.color) }}
     </div>
   </div>
 
@@ -15,24 +29,6 @@
     </div>
     <div class="col-md-6 mb-1">
       {{ form_row(form.finContrato, { label_attr: { class: 'mb-1' }, attr: { class: 'form-control m-1' } }) }}
-    </div>
-  </div>
-
-  <div class="mb-3 mt-2">
-    <label class="form-label mb-1 fw-semibold">Color identificador (opcional)</label>
-    <p class="small text-body-secondary mb-2">Elige uno de los 20 colores claros disponibles (blanco por defecto) para mantener legible el texto en el calendario.</p>
-    {{ form_errors(form.color) }}
-    <div class="d-flex flex-wrap gap-2">
-      {% for child in form.color %}
-        {{ form_widget(child, { attr: { class: 'btn-check', autocomplete: 'off' } }) }}
-        <label
-          class="selector-color-swatch rounded-circle d-inline-block"
-          for="{{ child.vars.id }}"
-          style="background-color: {{ child.vars.value }};"
-          title="{{ child.vars.label }} ({{ child.vars.value }})"
-          aria-label="{{ child.vars.label }}"
-        ></label>
-      {% endfor %}
     </div>
   </div>
 

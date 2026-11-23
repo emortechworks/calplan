@@ -1,14 +1,14 @@
 # 012 · Color del personal — Plan
 
 ## Enfoque
-Agregar la columna aditiva `color VARCHAR(7) DEFAULT '#ffffff' NOT NULL` en `Personal`, definir una paleta cerrada de 20 colores claros/pastel en `Personal::COLORES_DISPONIBLES`, exponerla en `PersonalType` con `ChoiceType` (`expanded: true`, `empty_data: '#ffffff'`, constraint `Choice`) y renderizarla en Bootstrap 5 como círculos seleccionables (`btn-check` + `.selector-color-swatch`), sin JS ni CDN.
+Agregar la columna aditiva `color VARCHAR(7) DEFAULT '#ffffff' NOT NULL` en `Personal`, definir una paleta cerrada de 20 colores claros/pastel en `Personal::COLORES_DISPONIBLES`, exponerla en `PersonalType` con `ChoiceType` desplegable (`expanded: false`, `empty_data: '#ffffff'`, constraint `Choice`, cada `<option>` con su color de fondo) y acompañarla de una muestra circular sincronizada con Stimulus (`color_preview_controller.js`), sin CDN.
 
 ## Implementación
 1. `src/Entity/Personal.php`: añadir constante `COLORES_DISPONIBLES` (20 colores claros), propiedad `$color = '#ffffff'` (`VARCHAR(7)`, default `'#ffffff'`) y `getColor()` / `setColor(?string)`.
-2. `src/Form/PersonalType.php`: añadir `color` (`ChoiceType::class`, `expanded: true`, `multiple: false`, `required: false`, `empty_data: '#ffffff'`, `Choice` sobre `Personal::COLORES_DISPONIBLES`).
-3. `assets/styles/app.css` y `templates/personal/_form.html.twig`: renderizar las 20 muestras circulares clicables (`btn-check` + `.selector-color-swatch`) sin permitir colores libres/oscuros.
+2. `src/Form/PersonalType.php`: añadir `color` (`ChoiceType::class`, `expanded: false`, `multiple: false`, `required: false`, `empty_data: '#ffffff'`, `choice_attr` con color de fondo por opción y `Choice` sobre `Personal::COLORES_DISPONIBLES`).
+3. `assets/controllers/color_preview_controller.js` y `templates/personal/_form.html.twig`: cuadro de selección desplegable (`form-select`) dentro de un `input-group` con muestra circular en vivo a la izquierda.
 4. `templates/personal/index.html.twig`: mostrar muestra circular de color (`border`) junto al nombre en cada tarjeta.
-5. `tests/Controller/PersonalControllerTest.php`: cubrir 20 opciones en el formulario, default `#ffffff`, guardado de color de la paleta y rechazo por POST de colores fuera de la paleta (`#000000`).
+5. `tests/Controller/PersonalControllerTest.php`: cubrir 20 opciones en el `<select>`, default `#ffffff`, guardado de color de la paleta y rechazo por POST de colores fuera de la paleta (`#000000`).
 6. Generar y aplicar migración Doctrine en `dev` y `test`; validar `doctrine:schema:validate`, `lint:*` y `php bin/phpunit`.
 7. Actualizar `dominio.md`, `roadmap.md`, `spec/README.md` y estado de `012-color-personal`.
 

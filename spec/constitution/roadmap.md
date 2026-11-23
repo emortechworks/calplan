@@ -13,7 +13,7 @@
 - [009 · Personal](features/009-personal/) — CRUD de personal del usuario (`nombre`, `horasSemanales`, `fechaNacimiento`, `finContrato`, `activo`), `ManyToMany` con sucursales (`btn-check`), roles ordenados por prioridad (`PersonalRol` + Stimulus), filtro por sucursal + tests ([spec](features/009-personal/spec.md))
 - [010 · Roles por tienda](features/010-roles-por-tienda/) — relación `ManyToMany` `Sucursal ↔ Rol` (`sucursal_rol`) con chips `btn-check` y prioridades de rol separadas por sucursal en `/personal` (`PersonalRol` + paneles dinámicos Stimulus) + tests ([spec](features/010-roles-por-tienda/spec.md))
 - [011 · Renombrar Tienda a Sucursal](features/011-renombrar-sucursal/) — renombre integral de `Tienda` → `Sucursal` en BD (`RENAME TABLE` preservando datos), código PHP, rutas `/sucursales`, vistas Twig, Stimulus, tests y constitución ([spec](features/011-renombrar-sucursal/spec.md))
-- [012 · Color del personal](features/012-color-personal/) — campo `color` (`VARCHAR(7)` `#RRGGBB`, default `#ffffff`), paleta cerrada de 20 colores claros (`ChoiceType` + muestras `btn-check`), muestra circular en `/personal` + tests ([spec](features/012-color-personal/spec.md))
+- [012 · Color del personal](features/012-color-personal/) — campo `color` (`VARCHAR(7)` `#RRGGBB`, default `#ffffff`), desplegable cerrado de 20 colores claros (`ChoiceType` + vista previa Stimulus), muestra circular en `/personal` + tests ([spec](features/012-color-personal/spec.md))
 
 ## Siguiente 🔜
 

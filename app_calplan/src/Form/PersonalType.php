@@ -70,11 +70,14 @@ class PersonalType extends AbstractType
             ->add('color', ChoiceType::class, [
                 'label' => 'Color identificador (opcional)',
                 'choices' => array_flip(Personal::COLORES_DISPONIBLES),
-                'expanded' => true,
+                'expanded' => false,
                 'multiple' => false,
                 'required' => false,
                 'placeholder' => false,
                 'empty_data' => '#ffffff',
+                'choice_attr' => static fn (string $hex): array => [
+                    'style' => 'background-color: '.$hex.'; color: #212529;',
+                ],
                 // Impide elegir colores oscuros o fuera de la paleta clara autorizada.
                 'constraints' => [
                     new Choice(

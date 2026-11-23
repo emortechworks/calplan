@@ -233,7 +233,7 @@ final class PersonalControllerTest extends WebTestCase
         $this->login($client, $usuario->getEmail());
 
         $crawler = $client->request('GET', '/personal/nuevo');
-        self::assertCount(20, $crawler->filter('input[name="personal[color]"]'));
+        self::assertCount(20, $crawler->filter('select[name="personal[color]"] option'));
 
         $form = $crawler->selectButton('Guardar')->form();
         $form['personal[nombre]'] = 'Elena Color';

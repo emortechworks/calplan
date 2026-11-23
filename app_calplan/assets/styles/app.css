@@ -7,26 +7,3 @@ body {
     backdrop-filter: blur(1px);
     z-index: 1080;
 }
-
-.selector-color-swatch {
-    width: 1.85rem;
-    height: 1.85rem;
-    border: 1px solid #adb5bd;
-    cursor: pointer;
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
-}
-
-.selector-color-swatch:hover {
-    transform: scale(1.1);
-}
-
-.btn-check:checked + .selector-color-swatch {
-    border-color: #212529;
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #212529;
-    transform: scale(1.1);
-}
-
-.btn-check:focus-visible + .selector-color-swatch {
-    outline: 2px solid #212529;
-    outline-offset: 2px;
-}
