@@ -9,18 +9,18 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ColorType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Range;
-use Symfony\Component\Validator\Constraints\Regex;
 
 class PersonalType extends AbstractType
 {
@@ -67,19 +67,20 @@ class PersonalType extends AbstractType
                 'input' => 'datetime_immutable',
                 'required' => false,
             ])
-            ->add('color', ColorType::class, [
-                'label' => 'Color (opcional)',
+            ->add('color', ChoiceType::class, [
+                'label' => 'Color identificador (opcional)',
+                'choices' => array_flip(Personal::COLORES_DISPONIBLES),
+                'expanded' => true,
+                'multiple' => false,
                 'required' => false,
+                'placeholder' => false,
                 'empty_data' => '#ffffff',
+                // Impide elegir colores oscuros o fuera de la paleta clara autorizada.
                 'constraints' => [
-                    new Regex(
-                        pattern: '/^#[0-9a-fA-F]{6}$/',
-                        message: 'El color debe ser un código hexadecimal válido (#RRGGBB).',
+                    new Choice(
+                        choices: array_keys(Personal::COLORES_DISPONIBLES),
+                        message: 'Selecciona un color de la paleta disponible.',
                     ),
-                ],
-                'attr' => [
-                    'list' => 'personal-colores-sugeridos',
-                    'title' => 'Elige un color identificador',
                 ],
             ])
             ->add('sucursales', EntityType::class, [

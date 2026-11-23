@@ -21,7 +21,7 @@ _Modelo de datos del negocio. Entidades centrales, relaciones y reglas no obvias
   - `horasSemanales`: jornada semanal pactada en horas (entero obligatorio, default `48`).
   - `fechaNacimiento`: opcional (`nullable`); alimenta alertas/incidencias de cumpleaños.
   - `finContrato`: opcional (`nullable`); alerta de vencimiento durante la planeación semanal.
-  - `color`: color identificador hexadecimal `#RRGGBB` (`VARCHAR(7)`, opcional, default `#ffffff` — blanco, `012`); reutilizado en `016 · Tabla semanal coloreada`.
+  - `color`: color identificador hexadecimal `#RRGGBB` (`VARCHAR(7)`, opcional, default `#ffffff` — blanco, restringido a paleta cerrada de 20 colores claros para garantizar legibilidad, `012`); reutilizado en `016 · Tabla semanal coloreada`.
   - `activo`: borrado lógico (default `true`), igual que `Sucursal`.
 - **Roles y aptitudes por sucursal:** se sirve de los roles habilitados en cada `Sucursal` (`010` / `011`) mediante asignación ordenada por sucursal (`PersonalRol(personal, sucursal, rol, prioridad)`, `#1` = mayor peso / rol principal en esa sucursal, `#2`, `#3`… secundarios; roles ausentes = no los desempeña en esa sucursal).
 - **Perfil flexible:** cualidades descriptivas definibles por el usuario (`013`); no van en columnas fijas.

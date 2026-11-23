@@ -12,6 +12,34 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\HasLifecycleCallbacks]
 class Personal
 {
+    /**
+     * Paleta cerrada de 20 colores claros/pastel legibles con texto oscuro en la tabla semanal.
+     *
+     * @var array<string, string>
+     */
+    public const COLORES_DISPONIBLES = [
+        '#ffffff' => 'Blanco',
+        '#f8d7da' => 'Rosa suave',
+        '#fde2e4' => 'Coral pastel',
+        '#ffe5d0' => 'Durazno',
+        '#ffedd5' => 'Albaricoque',
+        '#fef3c7' => 'Crema dorado',
+        '#fff3cd' => 'Amarillo suave',
+        '#fef9c3' => 'Limón pastel',
+        '#ecfccb' => 'Lima claro',
+        '#d1e7dd' => 'Menta suave',
+        '#dcfce7' => 'Verde pastel',
+        '#ccfbf1' => 'Turquesa claro',
+        '#cff4fc' => 'Cian pastel',
+        '#e0f2fe' => 'Celeste',
+        '#cfe2ff' => 'Azul claro',
+        '#e0e7ff' => 'Índigo pastel',
+        '#ede9fe' => 'Lavanda',
+        '#f3e8ff' => 'Lila suave',
+        '#fae8ff' => 'Fucsia pastel',
+        '#e2e3e5' => 'Gris claro',
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
