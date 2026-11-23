@@ -3,15 +3,21 @@
 {% block title %}Personal · Calendario Planeación{% endblock %}
 
 {% block body %}
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
   <h1 class="h3 mb-0 d-flex align-items-center gap-2">
     {{ ux_icon('bi:people') }}
     <span>Personal</span>
   </h1>
-  <a class="btn btn-dark m-2 p-2 d-inline-flex align-items-center gap-2" href="{{ path('app_personal_nuevo') }}">
-    {{ ux_icon('bi:plus-lg') }}
-    <span>Nuevo personal</span>
-  </a>
+  <div class="d-flex flex-wrap align-items-center">
+    <a class="btn btn-outline-dark m-2 p-2 d-inline-flex align-items-center gap-2" href="{{ path('app_atributo_perfil_index') }}">
+      {{ ux_icon('bi:sliders') }}
+      <span>Atributos de perfil</span>
+    </a>
+    <a class="btn btn-dark m-2 p-2 d-inline-flex align-items-center gap-2" href="{{ path('app_personal_nuevo') }}">
+      {{ ux_icon('bi:plus-lg') }}
+      <span>Nuevo personal</span>
+    </a>
+  </div>
 </div>
 
 {% if sucursales|length > 0 %}
@@ -75,6 +81,18 @@
                   </span>
                 {% endfor %}
               </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% set valoresPerfilOrdenados = persona.valoresPerfilOrdenados %}
+        {% if valoresPerfilOrdenados|length > 0 %}
+          <div class="d-flex flex-wrap align-items-center gap-1 mt-2">
+            {% for valorPerfil in valoresPerfilOrdenados %}
+              <span class="badge text-bg-light border {{ valorPerfil.atributo.activo ? 'text-dark' : 'text-secondary' }}">
+                <span class="fw-normal text-body-secondary">{{ valorPerfil.atributo.nombre }}:</span>
+                <span>{{ valorPerfil.valorFormateado }}</span>
+              </span>
             {% endfor %}
           </div>
         {% endif %}

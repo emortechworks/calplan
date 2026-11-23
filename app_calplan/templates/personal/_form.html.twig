@@ -197,6 +197,95 @@
     </div>
   </div>
 
+  <div class="mb-3 mt-3">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-1">
+      <label class="form-label mb-0 fw-semibold d-flex align-items-center gap-1">
+        {{ ux_icon('bi:sliders') }}
+        <span>Perfil descriptivo (opcional)</span>
+      </label>
+      <a class="small text-decoration-none" href="{{ path('app_atributo_perfil_index') }}">Configurar atributos</a>
+    </div>
+    <p class="small text-body-secondary mb-2">
+      Solo informativo; no influye en la planeación semanal.
+    </p>
+
+    {% if atributosPerfil|length > 0 %}
+      <div class="row g-2">
+        {% for atributo in atributosPerfil %}
+          {% set valorActual = valoresPerfil[atributo.id]|default('') %}
+          {% set errorCampo = erroresPerfil[atributo.id]|default(null) %}
+          <div class="col-md-4 mb-1">
+            <label class="form-label mb-1 d-flex align-items-center gap-1" for="perfil_atributo_{{ atributo.id }}">
+              <span>{{ atributo.nombre }}</span>
+              {% if not atributo.activo %}<span class="badge text-bg-warning">desactivado</span>{% endif %}
+            </label>
+
+            {% if atributo.tipo == 'escala' %}
+              <select
+                id="perfil_atributo_{{ atributo.id }}"
+                name="perfil[{{ atributo.id }}]"
+                class="form-select m-1 {{ errorCampo ? 'is-invalid' }}"
+              >
+                <option value="">— Sin definir —</option>
+                {% for nivel in 1..5 %}
+                  <option value="{{ nivel }}" {{ valorActual == (nivel ~ '') ? 'selected' }}>{{ nivel }} / 5</option>
+                {% endfor %}
+              </select>
+            {% elseif atributo.tipo == 'booleano' %}
+              <select
+                id="perfil_atributo_{{ atributo.id }}"
+                name="perfil[{{ atributo.id }}]"
+                class="form-select m-1 {{ errorCampo ? 'is-invalid' }}"
+              >
+                <option value="">— Sin definir —</option>
+                <option value="1" {{ valorActual == '1' ? 'selected' }}>Sí</option>
+                <option value="0" {{ valorActual == '0' ? 'selected' }}>No</option>
+              </select>
+            {% elseif atributo.tipo == 'lista' %}
+              <select
+                id="perfil_atributo_{{ atributo.id }}"
+                name="perfil[{{ atributo.id }}]"
+                class="form-select m-1 {{ errorCampo ? 'is-invalid' }}"
+              >
+                <option value="">— Sin definir —</option>
+                {% for opcion in atributo.opciones %}
+                  <option value="{{ opcion }}" {{ valorActual == opcion ? 'selected' }}>{{ opcion }}</option>
+                {% endfor %}
+              </select>
+            {% elseif atributo.tipo == 'numero' %}
+              <input
+                type="number"
+                step="any"
+                id="perfil_atributo_{{ atributo.id }}"
+                name="perfil[{{ atributo.id }}]"
+                value="{{ valorActual }}"
+                class="form-control m-1 {{ errorCampo ? 'is-invalid' }}"
+              >
+            {% else %}
+              <input
+                type="text"
+                maxlength="120"
+                id="perfil_atributo_{{ atributo.id }}"
+                name="perfil[{{ atributo.id }}]"
+                value="{{ valorActual }}"
+                class="form-control m-1 {{ errorCampo ? 'is-invalid' }}"
+              >
+            {% endif %}
+
+            {% if errorCampo %}
+              <div class="invalid-feedback d-block ms-1">{{ errorCampo }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="alert alert-light border small text-body-secondary mb-0">
+        Aún no tienes atributos de perfil configurados.
+        <a href="{{ path('app_atributo_perfil_index') }}">Configurar atributos de perfil</a> (o guarda sin perfil por ahora).
+      </div>
+    {% endif %}
+  </div>
+
   <button type="submit" class="btn btn-dark m-2 p-2 d-inline-flex align-items-center gap-2">
     {{ ux_icon('bi:check-lg') }}
     <span>Guardar</span>

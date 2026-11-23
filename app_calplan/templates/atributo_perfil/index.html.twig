@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Atributos de perfil · Calendario Planeación{% endblock %}
+
+{% block body %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <div>
+    <h1 class="h3 mb-1 d-flex align-items-center gap-2">
+      {{ ux_icon('bi:sliders') }}
+      <span>Atributos de perfil</span>
+    </h1>
+    <p class="small text-body-secondary mb-0">
+      Catálogo descriptivo de cualidades del personal. No tiene peso en la planeación semanal.
+    </p>
+  </div>
+  <div class="d-flex flex-wrap align-items-center">
+    <a class="btn btn-outline-secondary m-2 p-2 d-inline-flex align-items-center gap-2" href="{{ path('app_personal_index') }}">
+      {{ ux_icon('bi:people') }}
+      <span>Volver a personal</span>
+    </a>
+    <form method="post" action="{{ path('app_atributo_perfil_sugeridos') }}" class="m-0">
+      <input type="hidden" name="_token" value="{{ csrf_token('cargar_sugeridos_perfil') }}">
+      <button class="btn btn-outline-dark m-2 p-2 d-inline-flex align-items-center gap-2" type="submit">
+        {{ ux_icon('bi:stars') }}
+        <span>Cargar sugeridos</span>
+      </button>
+    </form>
+    <a class="btn btn-dark m-2 p-2 d-inline-flex align-items-center gap-2" href="{{ path('app_atributo_perfil_nuevo') }}">
+      {{ ux_icon('bi:plus-lg') }}
+      <span>Nuevo atributo</span>
+    </a>
+  </div>
+</div>
+
+{% for atributo in atributos %}
+  <div class="card mb-2 {{ not atributo.activo ? 'border-secondary opacity-75' }}">
+    <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+      <div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <span class="badge text-bg-light border text-secondary">#{{ atributo.orden }}</span>
+          <span class="fw-bold">{{ atributo.nombre }}</span>
+          <span class="badge text-bg-secondary">{{ atributo.etiquetaTipo }}</span>
+          {% if not atributo.activo %}<span class="badge text-bg-warning">desactivado</span>{% endif %}
+        </div>
+        {% if atributo.tipo == 'lista' and atributo.opciones|length > 0 %}
+          <div class="d-flex flex-wrap gap-1 mt-2">
+            {% for opcion in atributo.opciones %}
+              <span class="badge text-bg-light border text-dark">{{ opcion }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="btn-group btn-group-sm align-self-start align-self-md-center">
+        <a class="btn btn-outline-secondary m-2 p-2 d-inline-flex align-items-center gap-1" href="{{ path('app_atributo_perfil_editar', { id: atributo.id }) }}">
+          {{ ux_icon('bi:pencil') }}
+          <span>Editar</span>
+        </a>
+        <form method="post" action="{{ path('app_atributo_perfil_alternar', { id: atributo.id }) }}" class="m-0">
+          <input type="hidden" name="_token" value="{{ csrf_token('alternar_atributo_perfil' ~ atributo.id) }}">
+          <button class="btn btn-outline-secondary m-2 p-2 d-inline-flex align-items-center gap-1" type="submit">
+            {% if atributo.activo %}
+              {{ ux_icon('bi:slash-circle') }}
+              <span>Desactivar</span>
+            {% else %}
+              {{ ux_icon('bi:check-circle') }}
+              <span>Reactivar</span>
+            {% endif %}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% else %}
+  <div class="card border-light-subtle bg-white">
+    <div class="card-body text-body-secondary">
+      Aún no tienes atributos de perfil configurados. Puedes usar <strong>Cargar sugeridos</strong> (Velocidad, Fuerza, Puntualidad, Confiabilidad y Sexo) o <a href="{{ path('app_atributo_perfil_nuevo') }}">crear tu primer atributo</a>.
+    </div>
+  </div>
+{% endfor %}
+{% endblock %}

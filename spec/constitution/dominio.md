@@ -30,21 +30,20 @@ _Modelo de datos del negocio. Entidades centrales, relaciones y reglas no obvias
 - Catálogo ampliable de roles propiedad del `Usuario` (`007`): `nombre` único por usuario, `descripcion` opcional y `activo` (borrado lógico). Cada `Sucursal` selecciona qué roles de este catálogo existen en ella (`sucursal_rol`, `010` / `011`).
 - Por miembro del personal y por sucursal (`009` / `010` / `011`): relación ordenada con `Rol` (`PersonalRol` con `(personal_id, sucursal_id, rol_id, prioridad)`, donde `#1` tiene el mayor peso dentro de esa sucursal); los roles ausentes son los que no desempeña en esa sucursal.
 
-### Atributo de perfil (clave-valor)
-- Catálogo de atributos de cualidades propiedad del `Usuario` (compartido entre todas sus sucursales), con borrado lógico (`activo`) para no perder valores históricos.
+### Atributo de perfil (clave-valor descriptivo)
+- Catálogo de atributos de cualidades propiedad del `Usuario` (compartido entre todas sus sucursales, `013`), **100 % descriptivo** (sin campo `peso` ni impacto en `Propuesta semanal`), con borrado lógico (`activo`) para no perder valores históricos.
 - Cada definición de atributo incluye:
   - `nombre` (único por usuario).
-  - `tipo`: `escala` (1–5), `booleano` (Sí/No), `lista` (select con `opciones`), `numero` o `texto` corto. No se permite cambiar de `tipo` una vez tiene valores capturados.
+  - `tipo`: `escala` (1–5), `booleano` (Sí/No), `lista` (select con `opciones`), `numero` o `texto` corto (máx. 120 caracteres). No se permite cambiar de `tipo` una vez tiene valores capturados.
   - `opciones`: lista cerrada de valores (solo cuando `tipo = lista`).
-  - `peso`: importancia global para el algoritmo de propuesta semanal (`0` = solo informativo, `1–5` = prioridad; en `015` se complementa con reglas por día/sucursal).
   - `orden`: orden personalizable en pantalla.
-- **Valores por persona (`ValorPerfil`):** todos los atributos del perfil son **opcionales** al dar de alta o editar personal.
-- **Catálogo inicial sugerido** (editable/desactivable al crear cuenta o mediante acción "Cargar sugeridos"):
-  - `Velocidad` (`escala` 1–5, peso `3`)
-  - `Fuerza` (`escala` 1–5, peso `3`)
-  - `Puntualidad` (`escala` 1–5, peso `4`)
-  - `Confiabilidad` (`escala` 1–5, peso `5`)
-  - `Sexo` (`lista`: Femenino / Masculino / Otro, peso `0`)
+- **Valores por persona (`ValorPerfil`):** todos los atributos del perfil son **opcionales** al dar de alta o editar personal (sección opcional en el formulario de `Personal`).
+- **Catálogo inicial sugerido** (acción idempotente **"Cargar sugeridos"** desde `/perfil/atributos`, accesible vía botón en `/personal`):
+  - `Velocidad` (`escala` 1–5)
+  - `Fuerza` (`escala` 1–5)
+  - `Puntualidad` (`escala` 1–5)
+  - `Confiabilidad` (`escala` 1–5)
+  - `Sexo` (`lista`: Femenino / Masculino / Otro)
 
 ### Período / intervalo de tiempo
 - La **semana calendario (lunes–domingo)** sobre la que se genera la propuesta; acota la contabilidad de horas (**48 h de ley** o las `horasSemanales` pactadas) y la tabla resultante.
@@ -56,7 +55,7 @@ _Modelo de datos del negocio. Entidades centrales, relaciones y reglas no obvias
 - Día concreto: fecha, miembro del personal, rol asignado, horario de comida y quién lo cubre (otro encargado de área). Regla: en ningún momento un área queda sin vigilar.
 
 ### Propuesta semanal
-- Resultado agregado de la semana: tabla de la semana coloreada por trabajador, descargable/compartible. Utiliza los `peso` de los atributos del perfil y reglas configurables por día/sucursal.
+- Resultado agregado de la semana: tabla de la semana coloreada por trabajador, descargable/compartible. Utiliza prioridades de rol por sucursal, incidencias y reglas configurables por día/sucursal (el perfil del personal es solo descriptivo en esta etapa).
 
 ## Reglas no obvias
 

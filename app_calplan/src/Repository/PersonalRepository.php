@@ -28,6 +28,8 @@ class PersonalRepository extends ServiceEntityRepository
             ->leftJoin('p.personalRoles', 'pr')->addSelect('pr')
             ->leftJoin('pr.sucursal', 'prs')->addSelect('prs')
             ->leftJoin('pr.rol', 'r')->addSelect('r')
+            ->leftJoin('p.valoresPerfil', 'vp')->addSelect('vp')
+            ->leftJoin('vp.atributo', 'vpa')->addSelect('vpa')
             ->andWhere('p.usuario = :usuario')
             ->setParameter('usuario', $usuario)
             ->orderBy('p.activo', 'DESC')

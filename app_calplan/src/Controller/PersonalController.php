@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\AtributoPerfil;
 use App\Entity\Personal;
 use App\Entity\Rol;
 use App\Entity\Sucursal;
 use App\Entity\User;
 use App\Form\PersonalType;
+use App\Repository\AtributoPerfilRepository;
 use App\Repository\PersonalRepository;
 use App\Repository\SucursalRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,6 +27,7 @@ class PersonalController extends AbstractController
     public function __construct(
         private PersonalRepository $personalRepository,
         private SucursalRepository $sucursalRepository,
+        private AtributoPerfilRepository $atributoPerfilRepository,
     ) {
     }
 
@@ -101,6 +104,7 @@ class PersonalController extends AbstractController
     ): Response {
         $sucursalesPermitidas = $this->sucursalesParaFormulario($usuario, $persona);
         $rolesPermitidosPorSucursal = $this->rolesPermitidosPorSucursal($sucursalesPermitidas, $persona);
+        $atributosPerfil = $this->atributosParaFormulario($usuario, $persona);
 
         $form = $this->createForm(PersonalType::class, $persona, [
             'usuario' => $usuario,
@@ -109,6 +113,8 @@ class PersonalController extends AbstractController
         $form->handleRequest($request);
 
         $seleccionPorSucursal = $persona->getRolesOrdenadosPorSucursalIds();
+        $valoresPerfil = $persona->getMapaValoresPerfil();
+        $erroresPerfil = [];
 
         if ($form->isSubmitted()) {
             $gruposValidos = $this->resolverRolesPorSucursalEnviados(
@@ -118,10 +124,18 @@ class PersonalController extends AbstractController
                 $rolesPermitidosPorSucursal,
                 $seleccionPorSucursal,
             );
+            $valoresPerfilValidos = $this->resolverValoresPerfilEnviados(
+                $request->request->all('perfil'),
+                $form,
+                $atributosPerfil,
+                $valoresPerfil,
+                $erroresPerfil,
+            );
 
-            if ($form->isValid() && $gruposValidos !== null) {
+            if ($form->isValid() && $gruposValidos !== null && $valoresPerfilValidos !== null) {
                 $persona->setUsuario($usuario);
                 $persona->reemplazarRolesPorSucursal($gruposValidos);
+                $persona->reemplazarValoresPerfil($valoresPerfilValidos);
                 $entityManager->persist($persona);
                 $entityManager->flush();
 
@@ -147,6 +161,9 @@ class PersonalController extends AbstractController
                 $seleccionPorSucursal,
                 $sucursalesSeleccionadasIds,
             ),
+            'atributosPerfil' => array_values($atributosPerfil),
+            'valoresPerfil' => $valoresPerfil,
+            'erroresPerfil' => $erroresPerfil,
         ]);
     }
 
@@ -351,6 +368,117 @@ class PersonalController extends AbstractController
         }
 
         return $paneles;
+    }
+
+    /**
+     * Reúne atributos activos del usuario más los desactivados que la persona ya tenga con valor.
+     *
+     * @return array<int, AtributoPerfil>
+     */
+    private function atributosParaFormulario(User $usuario, Personal $persona): array
+    {
+        $conValorIds = $persona->getMapaValoresPerfil();
+        $resultado = [];
+
+        foreach ($this->atributoPerfilRepository->delUsuario($usuario) as $atributo) {
+            $atributoId = $atributo->getId();
+            if ($atributoId !== null && ($atributo->isActivo() || isset($conValorIds[$atributoId]))) {
+                $resultado[$atributoId] = $atributo;
+            }
+        }
+
+        return $resultado;
+    }
+
+    /**
+     * Valida en servidor los valores de perfil enviados por tipo y rechaza atributos ajenos.
+     *
+     * @param array<int|string, mixed>   $enviados
+     * @param array<int, AtributoPerfil> $atributosPermitidos
+     * @param array<int, string>         $valoresVista
+     * @param array<int, string>         $erroresPerfil
+     *
+     * @return list<array{atributo: AtributoPerfil, valor: string}>|null
+     */
+    private function resolverValoresPerfilEnviados(
+        array $enviados,
+        FormInterface $form,
+        array $atributosPermitidos,
+        array &$valoresVista,
+        array &$erroresPerfil,
+    ): ?array {
+        $hayErrores = false;
+
+        foreach ($enviados as $clave => $valorCrudo) {
+            $valor = \is_scalar($valorCrudo) ? trim((string) $valorCrudo) : '';
+            if ($valor === '') {
+                continue;
+            }
+
+            if ((!\is_int($clave) && !ctype_digit((string) $clave)) || !isset($atributosPermitidos[(int) $clave])) {
+                $form->addError(new FormError('Uno de los atributos de perfil enviados no es válido.'));
+
+                return null;
+            }
+        }
+
+        $pares = [];
+        $nuevosValoresVista = [];
+
+        foreach ($atributosPermitidos as $atributoId => $atributo) {
+            $crudo = isset($enviados[$atributoId]) && \is_scalar($enviados[$atributoId])
+                ? trim((string) $enviados[$atributoId])
+                : '';
+
+            if ($crudo === '') {
+                continue;
+            }
+
+            $nuevosValoresVista[$atributoId] = $crudo;
+            $error = $this->validarValorSegunTipo($atributo, $crudo);
+            if ($error !== null) {
+                $erroresPerfil[$atributoId] = $error;
+                $hayErrores = true;
+                continue;
+            }
+
+            $pares[] = [
+                'atributo' => $atributo,
+                'valor' => $crudo,
+            ];
+        }
+
+        $valoresVista = $nuevosValoresVista;
+
+        if ($hayErrores) {
+            $form->addError(new FormError('Revisa los valores del perfil descriptivo.'));
+
+            return null;
+        }
+
+        return $pares;
+    }
+
+    private function validarValorSegunTipo(AtributoPerfil $atributo, string $valor): ?string
+    {
+        return match ($atributo->getTipo()) {
+            AtributoPerfil::TIPO_ESCALA => \in_array($valor, ['1', '2', '3', '4', '5'], true)
+                ? null
+                : 'Selecciona un valor entre 1 y 5.',
+            AtributoPerfil::TIPO_BOOLEANO => \in_array($valor, ['0', '1'], true)
+                ? null
+                : 'Selecciona Sí o No.',
+            AtributoPerfil::TIPO_LISTA => \in_array($valor, $atributo->getOpciones(), true)
+                ? null
+                : 'Selecciona una opción válida de la lista.',
+            AtributoPerfil::TIPO_NUMERO => (is_numeric($valor) && mb_strlen($valor) <= 30)
+                ? null
+                : 'Ingresa un número válido.',
+            AtributoPerfil::TIPO_TEXTO => mb_strlen($valor) <= 120
+                ? null
+                : 'El texto no puede pasar de 120 caracteres.',
+            default => 'Tipo de atributo no soportado.',
+        };
     }
 
     private function denegarSiNoEsPropio(Personal $persona): void

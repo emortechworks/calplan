@@ -42,7 +42,7 @@ Todos vía Docker (no hay PHP/Composer/MySQL en el host). Sustituir `<PROJECT_NA
 
 ## Modelo de datos / dominio
 
-El modelo del dominio está documentado en [dominio.md](dominio.md). Entidades actuales en `src/Entity/`: `User`, `Sucursal`, `Rol`, `Personal` y `PersonalRol` (esquema gestionado exclusivamente vía migraciones en `migrations/`).
+El modelo del dominio está documentado en [dominio.md](dominio.md). Entidades actuales en `src/Entity/`: `User`, `Sucursal`, `Rol`, `Personal`, `PersonalRol`, `AtributoPerfil` y `ValorPerfil` (esquema gestionado exclusivamente vía migraciones en `migrations/`).
 
 ## Convenciones
 

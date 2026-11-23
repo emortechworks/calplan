@@ -81,6 +81,12 @@ class Personal
     #[ORM\OrderBy(['prioridad' => 'ASC'])]
     private Collection $personalRoles;
 
+    /**
+     * @var Collection<int, ValorPerfil>
+     */
+    #[ORM\OneToMany(targetEntity: ValorPerfil::class, mappedBy: 'personal', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $valoresPerfil;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
 
@@ -91,6 +97,7 @@ class Personal
     {
         $this->sucursales = new ArrayCollection();
         $this->personalRoles = new ArrayCollection();
+        $this->valoresPerfil = new ArrayCollection();
     }
 
     #[ORM\PrePersist]
@@ -317,6 +324,87 @@ class Personal
         usort($resultado, static fn (PersonalRol $a, PersonalRol $b): int => $a->getPrioridad() <=> $b->getPrioridad());
 
         return $resultado;
+    }
+
+    /**
+     * @return Collection<int, ValorPerfil>
+     */
+    public function getValoresPerfil(): Collection
+    {
+        return $this->valoresPerfil;
+    }
+
+    /**
+     * @return list<ValorPerfil> ordenados por atributo.orden ASC y nombre ASC
+     */
+    public function getValoresPerfilOrdenados(): array
+    {
+        $valores = $this->valoresPerfil->toArray();
+        usort($valores, static function (ValorPerfil $a, ValorPerfil $b): int {
+            $cmpOrden = $a->getAtributo()->getOrden() <=> $b->getAtributo()->getOrden();
+            if ($cmpOrden !== 0) {
+                return $cmpOrden;
+            }
+
+            return strcmp((string) $a->getAtributo()->getNombre(), (string) $b->getAtributo()->getNombre());
+        });
+
+        return $valores;
+    }
+
+    /**
+     * @return array<int, string> mapa atributoId => valor crudo
+     */
+    public function getMapaValoresPerfil(): array
+    {
+        $mapa = [];
+        foreach ($this->valoresPerfil as $valorPerfil) {
+            $atributoId = $valorPerfil->getAtributo()->getId();
+            if ($atributoId !== null) {
+                $mapa[$atributoId] = $valorPerfil->getValor();
+            }
+        }
+
+        return $mapa;
+    }
+
+    /**
+     * Sincroniza valores del perfil en sitio para evitar colisiones en
+     * UNIQ_VALOR_PERFIL_PERSONAL_ATRIBUTO durante un único flush() de Doctrine.
+     *
+     * @param list<array{atributo: AtributoPerfil, valor: string}> $valores
+     */
+    public function reemplazarValoresPerfil(array $valores): void
+    {
+        $existentesPorAtributo = [];
+        foreach ($this->valoresPerfil as $valorPerfil) {
+            $atributoId = $valorPerfil->getAtributo()->getId();
+            if ($atributoId !== null) {
+                $existentesPorAtributo[$atributoId] = $valorPerfil;
+            }
+        }
+
+        $conservados = [];
+        foreach ($valores as $par) {
+            $atributo = $par['atributo'];
+            $atributoId = $atributo->getId();
+            if ($atributoId === null || isset($conservados[$atributoId])) {
+                continue;
+            }
+
+            $conservados[$atributoId] = true;
+            if (isset($existentesPorAtributo[$atributoId])) {
+                $existentesPorAtributo[$atributoId]->setValor($par['valor']);
+            } else {
+                $this->valoresPerfil->add(new ValorPerfil($this, $atributo, $par['valor']));
+            }
+        }
+
+        foreach ($existentesPorAtributo as $atributoId => $valorPerfil) {
+            if (!isset($conservados[$atributoId])) {
+                $this->valoresPerfil->removeElement($valorPerfil);
+            }
+        }
     }
 
     public function getCreatedAt(): ?\DateTimeInterface

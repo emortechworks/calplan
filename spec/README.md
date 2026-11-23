@@ -50,4 +50,4 @@ Cada vez que se empiece un nuevo feature, se sigue este flujo:
 5. **Preguntar** por el merge a `main` de la rama terminada → si aprobas, fusionamos.
 6. Las ramas terminadas se **mantienen** (no se borran).
 
-Hoy se continúa desde `main`; la siguiente feature (013 · Perfil del personal) arrancará con la rama nueva cuando se acelere.
+Hoy se continúa desde `main`; la siguiente feature (014 · Incidencias y peticiones) arrancará con la rama nueva cuando se acelere.

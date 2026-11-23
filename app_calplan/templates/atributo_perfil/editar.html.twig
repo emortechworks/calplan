@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar atributo de perfil · Calendario Planeación{% endblock %}
+
+{% block body %}
+<h1 class="h3 mb-4 d-flex align-items-center gap-2">
+  {{ ux_icon('bi:pencil') }}
+  <span>Editar atributo: {{ atributo.nombre }}</span>
+</h1>
+{% include 'atributo_perfil/_form.html.twig' %}
+{% endblock %}

@@ -2,10 +2,12 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\AtributoPerfil;
 use App\Entity\Personal;
 use App\Entity\Rol;
 use App\Entity\Sucursal;
 use App\Entity\User;
+use App\Entity\ValorPerfil;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -382,6 +384,124 @@ final class PersonalControllerTest extends WebTestCase
         $client->request('POST', '/personal/'.$persona->getId().'/alternar', ['_token' => $this->tokenDeListado($client)]);
         self::assertResponseRedirects('/personal');
         self::assertEquals(1, $connection->fetchOne('SELECT activo FROM personal WHERE id = ?', [$persona->getId()]));
+    }
+
+    public function testGuardarEditarLimpiarYValidarValoresDePerfilDescriptivo(): void
+    {
+        $client = static::createClient();
+        $usuario = $this->crearUsuario($this->uniqueEmail('pers_perfil'));
+        $otroUsuario = $this->crearUsuario($this->uniqueEmail('pers_perfil_otro'));
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $connection = $entityManager->getConnection();
+
+        $attrEscala = (new AtributoPerfil())->setUsuario($usuario)->setNombre('Velocidad')->setTipo(AtributoPerfil::TIPO_ESCALA)->setOrden(1);
+        $attrBool = (new AtributoPerfil())->setUsuario($usuario)->setNombre('Disponibilidad fines')->setTipo(AtributoPerfil::TIPO_BOOLEANO)->setOrden(2);
+        $attrLista = (new AtributoPerfil())->setUsuario($usuario)->setNombre('Sexo')->setTipo(AtributoPerfil::TIPO_LISTA)->setOpciones(['Femenino', 'Masculino', 'Otro'])->setOrden(3);
+        $attrNumero = (new AtributoPerfil())->setUsuario($usuario)->setNombre('Años experiencia')->setTipo(AtributoPerfil::TIPO_NUMERO)->setOrden(4);
+        $attrTexto = (new AtributoPerfil())->setUsuario($usuario)->setNombre('Nota')->setTipo(AtributoPerfil::TIPO_TEXTO)->setOrden(5);
+        $attrAjeno = (new AtributoPerfil())->setUsuario($otroUsuario)->setNombre('Ajeno')->setTipo(AtributoPerfil::TIPO_TEXTO)->setOrden(1);
+        foreach ([$attrEscala, $attrBool, $attrLista, $attrNumero, $attrTexto, $attrAjeno] as $a) {
+            $entityManager->persist($a);
+        }
+        $entityManager->flush();
+
+        $this->login($client, $usuario->getEmail());
+
+        // Alta con los 5 tipos de atributos.
+        $crawler = $client->request('GET', '/personal/nuevo');
+        self::assertResponseIsSuccessful();
+        $csrf = $crawler->filter('input[name="personal[_token]"]')->attr('value');
+
+        $client->request('POST', '/personal/nuevo', [
+            'personal' => [
+                'nombre' => 'Rosa Perfil',
+                'horasSemanales' => '48',
+                'color' => '#ffffff',
+                'rolesPorSucursal' => '{}',
+                '_token' => $csrf,
+            ],
+            'perfil' => [
+                $attrEscala->getId() => '4',
+                $attrBool->getId() => '1',
+                $attrLista->getId() => 'Femenino',
+                $attrNumero->getId() => '3.5',
+                $attrTexto->getId() => 'Muy organizada',
+            ],
+        ]);
+
+        self::assertResponseRedirects('/personal');
+        $client->followRedirect();
+        $html = (string) $client->getResponse()->getContent();
+        self::assertStringContainsString('Atributos de perfil', $html);
+        self::assertStringContainsString('4/5', $html);
+        self::assertStringContainsString('Femenino', $html);
+        self::assertStringContainsString('Muy organizada', $html);
+
+        $personaId = (int) $connection->fetchOne('SELECT id FROM personal WHERE usuario_id = ? AND nombre = ?', [$usuario->getId(), 'Rosa Perfil']);
+        self::assertSame(5, (int) $connection->fetchOne('SELECT COUNT(*) FROM valor_perfil WHERE personal_id = ?', [$personaId]));
+
+        // Rechaza valor fuera de rango y atributo ajeno.
+        $crawlerEdit = $client->request('GET', '/personal/'.$personaId.'/editar');
+        $csrfEdit = $crawlerEdit->filter('input[name="personal[_token]"]')->attr('value');
+
+        $client->request('POST', '/personal/'.$personaId.'/editar', [
+            'personal' => [
+                'nombre' => 'Rosa Perfil',
+                'horasSemanales' => '48',
+                'color' => '#ffffff',
+                'rolesPorSucursal' => '{}',
+                '_token' => $csrfEdit,
+            ],
+            'perfil' => [
+                $attrEscala->getId() => '9',
+            ],
+        ]);
+        self::assertResponseIsSuccessful();
+        self::assertStringContainsString('Selecciona un valor entre 1 y 5.', (string) $client->getResponse()->getContent());
+
+        $client->request('POST', '/personal/'.$personaId.'/editar', [
+            'personal' => [
+                'nombre' => 'Rosa Perfil',
+                'horasSemanales' => '48',
+                'color' => '#ffffff',
+                'rolesPorSucursal' => '{}',
+                '_token' => $csrfEdit,
+            ],
+            'perfil' => [
+                $attrAjeno->getId() => 'Intruso',
+            ],
+        ]);
+        self::assertResponseIsSuccessful();
+        self::assertStringContainsString('Uno de los atributos de perfil enviados no es válido.', (string) $client->getResponse()->getContent());
+
+        // Desactiva un atributo con valor existente y verifica que aparece en edición y se puede actualizar/limpiar.
+        $connection->executeStatement('UPDATE atributo_perfil SET activo = 0 WHERE id = ?', [$attrTexto->getId()]);
+        $crawlerDesact = $client->request('GET', '/personal/'.$personaId.'/editar');
+        self::assertStringContainsString('Nota', (string) $client->getResponse()->getContent());
+        self::assertStringContainsString('desactivado', (string) $client->getResponse()->getContent());
+
+        $csrfDesact = $crawlerDesact->filter('input[name="personal[_token]"]')->attr('value');
+        $client->request('POST', '/personal/'.$personaId.'/editar', [
+            'personal' => [
+                'nombre' => 'Rosa Perfil',
+                'horasSemanales' => '48',
+                'color' => '#ffffff',
+                'rolesPorSucursal' => '{}',
+                '_token' => $csrfDesact,
+            ],
+            'perfil' => [
+                $attrEscala->getId() => '5',
+                $attrBool->getId() => '',
+                $attrLista->getId() => 'Femenino',
+                $attrNumero->getId() => '',
+                $attrTexto->getId() => 'Conservada',
+            ],
+        ]);
+        self::assertResponseRedirects('/personal');
+
+        self::assertSame(3, (int) $connection->fetchOne('SELECT COUNT(*) FROM valor_perfil WHERE personal_id = ?', [$personaId]));
+        self::assertSame('5', $connection->fetchOne('SELECT valor FROM valor_perfil WHERE personal_id = ? AND atributo_id = ?', [$personaId, $attrEscala->getId()]));
+        self::assertSame('Conservada', $connection->fetchOne('SELECT valor FROM valor_perfil WHERE personal_id = ? AND atributo_id = ?', [$personaId, $attrTexto->getId()]));
     }
 
     private function tokenDeListado(KernelBrowser $client): string

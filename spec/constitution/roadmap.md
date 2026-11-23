@@ -14,15 +14,15 @@
 - [010 · Roles por tienda](features/010-roles-por-tienda/) — relación `ManyToMany` `Sucursal ↔ Rol` (`sucursal_rol`) con chips `btn-check` y prioridades de rol separadas por sucursal en `/personal` (`PersonalRol` + paneles dinámicos Stimulus) + tests ([spec](features/010-roles-por-tienda/spec.md))
 - [011 · Renombrar Tienda a Sucursal](features/011-renombrar-sucursal/) — renombre integral de `Tienda` → `Sucursal` en BD (`RENAME TABLE` preservando datos), código PHP, rutas `/sucursales`, vistas Twig, Stimulus, tests y constitución ([spec](features/011-renombrar-sucursal/spec.md))
 - [012 · Color del personal](features/012-color-personal/) — campo `color` (`VARCHAR(7)` `#RRGGBB`, default `#ffffff`), desplegable cerrado de 20 colores claros (`ChoiceType` + vista previa Stimulus), muestra circular en `/personal` + tests ([spec](features/012-color-personal/spec.md))
+- [013 · Perfil del personal](features/013-perfil-personal/) — catálogo configurable descriptivo de atributos por usuario (`escala` 1–5, `booleano`, `lista`, `numero`, `texto`; con `orden`, borrado lógico, sin `peso` y acción idempotente **Cargar sugeridos** accesible desde `/personal`) + valores opcionales por persona en el formulario de Personal y badges en `/personal` + tests ([spec](features/013-perfil-personal/spec.md))
 
 ## Siguiente 🔜
 
-- 013 · Perfil del personal — catálogo configurable de atributos de cualidades por usuario (`escala` 1–5, `booleano`, `lista`, `numero`, `texto`; con `peso` 0–5, `orden`, borrado lógico y sugeridos iniciales: Velocidad, Fuerza, Puntualidad, Confiabilidad, Sexo) + valores opcionales por persona. Dependencias: `Personal` (009).
+- 014 · Incidencias y peticiones — vacaciones, descanso semanal, cumpleaños, incapacidad, cursos, repuestos/apoyos; fecha + tipo + personal. Alimentan la contabilidad de horas a la semana. Dependencias: `Personal` (009).
 
 ## Backlog / ideas 💡 (orden de dependencias)
 
-- 014 · Incidencias y peticiones — vacaciones, descanso semanal, cumpleaños, incapacidad, cursos, repuestos/apoyos; fecha + tipo + personal. Alimentan la contabilidad de horas a la semana. Dependencias: `Personal` (009).
-- 015 · Propuesta semanal — formulario (sucursal + período + personal seleccionado) + generación usando pesos del perfil, prioridades de rol por sucursal y reglas por día/sucursal: días de trabajo/descanso, horario de comida cubierto por otro encargado de área, horas/semana menos incidencias y alertas de fin de contrato/cumpleaños. Dependencias: `Sucursal` (005 / 011), `Roles` (007), `Personal` (009), `Roles por sucursal` (010 / 011), `Perfil` (013), `Incidencias` (014).
+- 015 · Propuesta semanal — formulario (sucursal + período + personal seleccionado) + generación usando prioridades de rol por sucursal y reglas por día/sucursal: días de trabajo/descanso, horario de comida cubierto por otro encargado de área, horas/semana menos incidencias y alertas de fin de contrato/cumpleaños (el perfil de `013` es solo descriptivo por el momento). Dependencias: `Sucursal` (005 / 011), `Roles` (007), `Personal` (009), `Roles por sucursal` (010 / 011), `Incidencias` (014).
 - 016 · Tabla semanal coloreada — vista de la propuesta coloreada por trabajador usando `Personal.color` (`012`). Dependencias: `Color del personal` (012), `Propuesta semanal` (015).
 - 017 · Exportar / compartir — PDF / CSV / Sheets / Excel (decidir formato al llegar). Dependencias: `Propuesta semanal` (015) / `Tabla` (016).
 
