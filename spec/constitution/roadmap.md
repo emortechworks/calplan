@@ -13,17 +13,18 @@
 - [009 · Personal](features/009-personal/) — CRUD de personal del usuario (`nombre`, `horasSemanales`, `fechaNacimiento`, `finContrato`, `activo`), `ManyToMany` con sucursales (`btn-check`), roles ordenados por prioridad (`PersonalRol` + Stimulus), filtro por sucursal + tests ([spec](features/009-personal/spec.md))
 - [010 · Roles por tienda](features/010-roles-por-tienda/) — relación `ManyToMany` `Sucursal ↔ Rol` (`sucursal_rol`) con chips `btn-check` y prioridades de rol separadas por sucursal en `/personal` (`PersonalRol` + paneles dinámicos Stimulus) + tests ([spec](features/010-roles-por-tienda/spec.md))
 - [011 · Renombrar Tienda a Sucursal](features/011-renombrar-sucursal/) — renombre integral de `Tienda` → `Sucursal` en BD (`RENAME TABLE` preservando datos), código PHP, rutas `/sucursales`, vistas Twig, Stimulus, tests y constitución ([spec](features/011-renombrar-sucursal/spec.md))
+- [012 · Color del personal](features/012-color-personal/) — campo `color` (`VARCHAR(7)` `#RRGGBB`, default `#ffffff`), selector `ColorType` + `<datalist>` pastel en formulario, muestra circular en `/personal` + tests ([spec](features/012-color-personal/spec.md))
 
 ## Siguiente 🔜
 
-- 012 · Perfil del personal — catálogo configurable de atributos de cualidades por usuario (`escala` 1–5, `booleano`, `lista`, `numero`, `texto`; con `peso` 0–5, `orden`, borrado lógico y sugeridos iniciales: Velocidad, Fuerza, Puntualidad, Confiabilidad, Sexo) + valores opcionales por persona. Dependencias: `Personal` (009).
+- 013 · Perfil del personal — catálogo configurable de atributos de cualidades por usuario (`escala` 1–5, `booleano`, `lista`, `numero`, `texto`; con `peso` 0–5, `orden`, borrado lógico y sugeridos iniciales: Velocidad, Fuerza, Puntualidad, Confiabilidad, Sexo) + valores opcionales por persona. Dependencias: `Personal` (009).
 
 ## Backlog / ideas 💡 (orden de dependencias)
 
-- 013 · Incidencias y peticiones — vacaciones, descanso semanal, cumpleaños, incapacidad, cursos, repuestos/apoyos; fecha + tipo + personal. Alimentan la contabilidad de horas a la semana. Dependencias: `Personal` (009).
-- 014 · Propuesta semanal — formulario (sucursal + período + personal seleccionado) + generación usando pesos del perfil, prioridades de rol por sucursal y reglas por día/sucursal: días de trabajo/descanso, horario de comida cubierto por otro encargado de área, horas/semana menos incidencias y alertas de fin de contrato/cumpleaños. Dependencias: `Sucursal` (005 / 011), `Roles` (007), `Personal` (009), `Roles por sucursal` (010 / 011), `Perfil` (012), `Incidencias` (013).
-- 015 · Tabla semanal coloreada — vista de la propuesta coloreada por trabajador. Dependencias: `Propuesta semanal` (014).
-- 016 · Exportar / compartir — PDF / CSV / Sheets / Excel (decidir formato al llegar). Dependencias: `Propuesta semanal` (014) / `Tabla` (015).
+- 014 · Incidencias y peticiones — vacaciones, descanso semanal, cumpleaños, incapacidad, cursos, repuestos/apoyos; fecha + tipo + personal. Alimentan la contabilidad de horas a la semana. Dependencias: `Personal` (009).
+- 015 · Propuesta semanal — formulario (sucursal + período + personal seleccionado) + generación usando pesos del perfil, prioridades de rol por sucursal y reglas por día/sucursal: días de trabajo/descanso, horario de comida cubierto por otro encargado de área, horas/semana menos incidencias y alertas de fin de contrato/cumpleaños. Dependencias: `Sucursal` (005 / 011), `Roles` (007), `Personal` (009), `Roles por sucursal` (010 / 011), `Perfil` (013), `Incidencias` (014).
+- 016 · Tabla semanal coloreada — vista de la propuesta coloreada por trabajador usando `Personal.color` (`012`). Dependencias: `Color del personal` (012), `Propuesta semanal` (015).
+- 017 · Exportar / compartir — PDF / CSV / Sheets / Excel (decidir formato al llegar). Dependencias: `Propuesta semanal` (015) / `Tabla` (016).
 
 > Cada feature nueva se crea como `features/NNN-nombre-feature/` con `spec.md`, `plan.md` y `tasks.md` antes de tocar código.
 > **Regla de dependencias:** toda feature solo puede depender de números menores ya en **Hecho ✅**. Si al planear un incremento se detecta una dependencia pendiente posterior, primero se reordena y renumera el backlog (nunca lo ya en **Hecho ✅**) para implementar antes el prerrequisito.

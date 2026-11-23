@@ -1,11 +1,25 @@
 {{ form_errors(form) }}
 {{ form_start(form) }}
   <div class="row g-2">
-    <div class="col-md-8 mb-1">
+    <div class="col-md-6 mb-1">
       {{ form_row(form.nombre, { label_attr: { class: 'mb-1' }, attr: { class: 'form-control m-1' } }) }}
     </div>
-    <div class="col-md-4 mb-1">
+    <div class="col-md-3 mb-1">
       {{ form_row(form.horasSemanales, { label_attr: { class: 'mb-1' }, attr: { class: 'form-control m-1' } }) }}
+    </div>
+    <div class="col-md-3 mb-1">
+      {{ form_row(form.color, { label_attr: { class: 'mb-1' }, attr: { class: 'form-control form-control-color m-1' } }) }}
+      <datalist id="personal-colores-sugeridos">
+        <option value="#ffffff">Blanco</option>
+        <option value="#cfe2ff">Azul claro</option>
+        <option value="#d1e7dd">Verde claro</option>
+        <option value="#fff3cd">Amarillo claro</option>
+        <option value="#f8d7da">Rosa claro</option>
+        <option value="#e2d9f3">Morado claro</option>
+        <option value="#ffe5d0">Naranja claro</option>
+        <option value="#cff4fc">Cian claro</option>
+        <option value="#e2e3e5">Gris claro</option>
+      </datalist>
     </div>
   </div>
 

@@ -204,6 +204,7 @@ final class PersonalControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $usuario = $this->crearUsuario($this->uniqueEmail('pers_min'));
+        $connection = static::getContainer()->get(EntityManagerInterface::class)->getConnection();
 
         $this->login($client, $usuario->getEmail());
 
@@ -218,6 +219,41 @@ final class PersonalControllerTest extends WebTestCase
         $client->followRedirect();
         self::assertStringContainsString('Carlos Nuevo', (string) $client->getResponse()->getContent());
         self::assertStringContainsString('48 h/sem', (string) $client->getResponse()->getContent());
+
+        $colorGuardado = $connection->fetchOne('SELECT color FROM personal WHERE usuario_id = ? AND nombre = ?', [$usuario->getId(), 'Carlos Nuevo']);
+        self::assertSame('#ffffff', $colorGuardado);
+    }
+
+    public function testColorPersonalizadoYValidacionDeFormato(): void
+    {
+        $client = static::createClient();
+        $usuario = $this->crearUsuario($this->uniqueEmail('pers_color'));
+        $connection = static::getContainer()->get(EntityManagerInterface::class)->getConnection();
+
+        $this->login($client, $usuario->getEmail());
+
+        $crawler = $client->request('GET', '/personal/nuevo');
+        $form = $crawler->selectButton('Guardar')->form();
+        $form['personal[nombre]'] = 'Elena Color';
+        $form['personal[color]'] = '#CFE2FF';
+        $client->submit($form);
+
+        self::assertResponseRedirects('/personal');
+        $client->followRedirect();
+        $html = (string) $client->getResponse()->getContent();
+        self::assertStringContainsString('background-color: #cfe2ff;', $html);
+
+        $personaId = (int) $connection->fetchOne('SELECT id FROM personal WHERE usuario_id = ? AND nombre = ?', [$usuario->getId(), 'Elena Color']);
+        self::assertSame('#cfe2ff', $connection->fetchOne('SELECT color FROM personal WHERE id = ?', [$personaId]));
+
+        // Rechaza un valor fuera del formato hexadecimal #RRGGBB.
+        $crawlerEdit = $client->request('GET', '/personal/'.$personaId.'/editar');
+        $formEdit = $crawlerEdit->selectButton('Guardar')->form();
+        $formEdit['personal[color]'] = 'rojo-invalido';
+        $client->submit($formEdit);
+
+        self::assertResponseIsSuccessful();
+        self::assertStringContainsString('El color debe ser un código hexadecimal válido (#RRGGBB).', (string) $client->getResponse()->getContent());
     }
 
     public function testRechazaRolQueNoPerteneceALaSucursalSeleccionada(): void

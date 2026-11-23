@@ -29,6 +29,9 @@ class Personal
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $finContrato = null;
 
+    #[ORM\Column(length: 7, options: ['default' => '#ffffff'])]
+    private string $color = '#ffffff';
+
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $usuario = null;
@@ -124,6 +127,19 @@ class Personal
     public function setFinContrato(?\DateTimeImmutable $finContrato): static
     {
         $this->finContrato = $finContrato;
+
+        return $this;
+    }
+
+    public function getColor(): string
+    {
+        return $this->color;
+    }
+
+    public function setColor(?string $color): static
+    {
+        $normalizado = trim((string) $color);
+        $this->color = $normalizado !== '' ? strtolower($normalizado) : '#ffffff';
 
         return $this;
     }

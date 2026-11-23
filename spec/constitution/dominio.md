@@ -21,9 +21,10 @@ _Modelo de datos del negocio. Entidades centrales, relaciones y reglas no obvias
   - `horasSemanales`: jornada semanal pactada en horas (entero obligatorio, default `48`).
   - `fechaNacimiento`: opcional (`nullable`); alimenta alertas/incidencias de cumpleaños.
   - `finContrato`: opcional (`nullable`); alerta de vencimiento durante la planeación semanal.
+  - `color`: color identificador hexadecimal `#RRGGBB` (`VARCHAR(7)`, opcional, default `#ffffff` — blanco, `012`); reutilizado en `016 · Tabla semanal coloreada`.
   - `activo`: borrado lógico (default `true`), igual que `Sucursal`.
 - **Roles y aptitudes por sucursal:** se sirve de los roles habilitados en cada `Sucursal` (`010` / `011`) mediante asignación ordenada por sucursal (`PersonalRol(personal, sucursal, rol, prioridad)`, `#1` = mayor peso / rol principal en esa sucursal, `#2`, `#3`… secundarios; roles ausentes = no los desempeña en esa sucursal).
-- **Perfil flexible:** cualidades descriptivas definibles por el usuario (`012`); no van en columnas fijas.
+- **Perfil flexible:** cualidades descriptivas definibles por el usuario (`013`); no van en columnas fijas.
 
 ### Rol / Asignación
 - Catálogo ampliable de roles propiedad del `Usuario` (`007`): `nombre` único por usuario, `descripcion` opcional y `activo` (borrado lógico). Cada `Sucursal` selecciona qué roles de este catálogo existen en ella (`sucursal_rol`, `010` / `011`).
@@ -35,7 +36,7 @@ _Modelo de datos del negocio. Entidades centrales, relaciones y reglas no obvias
   - `nombre` (único por usuario).
   - `tipo`: `escala` (1–5), `booleano` (Sí/No), `lista` (select con `opciones`), `numero` o `texto` corto. No se permite cambiar de `tipo` una vez tiene valores capturados.
   - `opciones`: lista cerrada de valores (solo cuando `tipo = lista`).
-  - `peso`: importancia global para el algoritmo de propuesta semanal (`0` = solo informativo, `1–5` = prioridad; en `014` se complementa con reglas por día/sucursal).
+  - `peso`: importancia global para el algoritmo de propuesta semanal (`0` = solo informativo, `1–5` = prioridad; en `015` se complementa con reglas por día/sucursal).
   - `orden`: orden personalizable en pantalla.
 - **Valores por persona (`ValorPerfil`):** todos los atributos del perfil son **opcionales** al dar de alta o editar personal.
 - **Catálogo inicial sugerido** (editable/desactivable al crear cuenta o mediante acción "Cargar sugeridos"):

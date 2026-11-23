@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -19,6 +20,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Range;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class PersonalType extends AbstractType
 {
@@ -64,6 +66,21 @@ class PersonalType extends AbstractType
                 'widget' => 'single_text',
                 'input' => 'datetime_immutable',
                 'required' => false,
+            ])
+            ->add('color', ColorType::class, [
+                'label' => 'Color (opcional)',
+                'required' => false,
+                'empty_data' => '#ffffff',
+                'constraints' => [
+                    new Regex(
+                        pattern: '/^#[0-9a-fA-F]{6}$/',
+                        message: 'El color debe ser un código hexadecimal válido (#RRGGBB).',
+                    ),
+                ],
+                'attr' => [
+                    'list' => 'personal-colores-sugeridos',
+                    'title' => 'Elige un color identificador',
+                ],
             ])
             ->add('sucursales', EntityType::class, [
                 'class' => Sucursal::class,
