@@ -1,13 +1,13 @@
 {{ form_errors(form) }}
 {{ form_start(form) }}
   <div class="row g-2">
-    <div class="col-md-6 mb-1">
+    <div class="col-md-8 mb-1">
       {{ form_row(form.nombre, { label_attr: { class: 'mb-1' }, attr: { class: 'form-control m-1' } }) }}
     </div>
     <div class="col-md-2 mb-1">
       {{ form_row(form.horasSemanales, { label_attr: { class: 'mb-1' }, attr: { class: 'form-control m-1' } }) }}
     </div>
-    <div class="col-md-4 mb-1" data-controller="color-preview">
+    <div class="col-md-2 mb-1" data-controller="color-preview">
       {{ form_label(form.color, null, { label_attr: { class: 'form-label mb-1' } }) }}
       {{ form_widget(form.color, { attr: { class: 'd-none', 'data-color-preview-target': 'select' } }) }}
       <div class="dropdown m-1">
@@ -85,13 +85,13 @@
         <span>Roles y prioridad por sucursal</span>
       </label>
       <p class="small text-body-secondary mb-2">
-        Cada sucursal seleccionada despliega únicamente sus roles disponibles. Dentro de cada sucursal, <strong>#1</strong> tiene el mayor peso (principal), seguido de <strong>#2</strong>, <strong>#3</strong>…
+       Selecciona los roles en orden de prioridad.
       </p>
       {{ form_widget(form.rolesPorSucursal, { attr: { 'data-roles-ordenados-target': 'input' } }) }}
       {{ form_errors(form.rolesPorSucursal) }}
 
       <div data-roles-ordenados-target="sinSucursales" class="alert alert-light border small text-body-secondary mb-0">
-        Selecciona al menos una sucursal arriba para desplegar y priorizar sus roles.
+        Selecciona al menos una sucursal.
       </div>
 
       <div class="d-flex flex-column gap-3 mt-2">

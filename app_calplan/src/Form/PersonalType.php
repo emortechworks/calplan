@@ -68,7 +68,7 @@ class PersonalType extends AbstractType
                 'required' => false,
             ])
             ->add('color', ChoiceType::class, [
-                'label' => 'Color identificador (opcional)',
+                'label' => 'Color (opcional)',
                 'choices' => array_flip(Personal::COLORES_DISPONIBLES),
                 'expanded' => false,
                 'multiple' => false,
