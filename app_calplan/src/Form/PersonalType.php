@@ -75,9 +75,6 @@ class PersonalType extends AbstractType
                 'required' => false,
                 'placeholder' => false,
                 'empty_data' => '#ffffff',
-                'choice_attr' => static fn (string $hex): array => [
-                    'style' => 'background-color: '.$hex.'; color: #212529;',
-                ],
                 // Impide elegir colores oscuros o fuera de la paleta clara autorizada.
                 'constraints' => [
                     new Choice(

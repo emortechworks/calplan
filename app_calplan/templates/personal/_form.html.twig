@@ -9,15 +9,37 @@
     </div>
     <div class="col-md-4 mb-1" data-controller="color-preview">
       {{ form_label(form.color, null, { label_attr: { class: 'form-label mb-1' } }) }}
-      <div class="input-group m-1">
-        <span class="input-group-text bg-white">
+      {{ form_widget(form.color, { attr: { class: 'd-none', 'data-color-preview-target': 'select' } }) }}
+      <div class="dropdown m-1">
+        <button
+          type="button"
+          class="form-select d-flex align-items-center"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          aria-label="Seleccionar color identificador"
+        >
           <span
             data-color-preview-target="muestra"
-            class="d-inline-block rounded-circle border border-secondary-subtle"
-            style="width: 1.1rem; height: 1.1rem; background-color: {{ form.color.vars.value|default('#ffffff') }};"
+            class="d-inline-block rounded border border-secondary-subtle w-100 me-2"
+            style="height: 1.25rem; background-color: {{ form.color.vars.value|default('#ffffff') }};"
           ></span>
-        </span>
-        {{ form_widget(form.color, { attr: { class: 'form-select', 'data-color-preview-target': 'select', 'data-action': 'change->color-preview#actualizar' } }) }}
+        </button>
+        <div class="dropdown-menu p-2 shadow-sm">
+          <div class="color-dropdown-grid">
+            {% for choice in form.color.vars.choices %}
+              <button
+                type="button"
+                class="color-opcion-btn p-0"
+                style="background-color: {{ choice.value }};"
+                title="{{ choice.label }}"
+                aria-label="{{ choice.label }}"
+                data-color-preview-target="opcion"
+                data-color-value="{{ choice.value }}"
+                data-action="click->color-preview#elegir"
+              ></button>
+            {% endfor %}
+          </div>
+        </div>
       </div>
       {{ form_errors(form.color) }}
     </div>

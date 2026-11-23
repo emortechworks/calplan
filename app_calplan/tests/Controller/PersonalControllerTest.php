@@ -234,6 +234,9 @@ final class PersonalControllerTest extends WebTestCase
 
         $crawler = $client->request('GET', '/personal/nuevo');
         self::assertCount(20, $crawler->filter('select[name="personal[color]"] option'));
+        $botonesColor = $crawler->filter('.color-opcion-btn');
+        self::assertCount(20, $botonesColor);
+        self::assertSame('', trim($botonesColor->first()->text()));
 
         $form = $crawler->selectButton('Guardar')->form();
         $form['personal[nombre]'] = 'Elena Color';

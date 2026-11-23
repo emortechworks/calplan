@@ -6,7 +6,7 @@
 - `009 · Personal` (Hecho ✅)
 
 ## Qué hace
-Añade a `Personal` el campo `color` (hexadecimal `#RRGGBB`, opcional con valor por defecto `#ffffff` — blanco), seleccionable exclusivamente de una paleta cerrada de **20 colores claros/pastel** (`Personal::COLORES_DISPONIBLES`) mediante un **cuadro de selección desplegable** (`ChoiceType` + `<select class="form-select">` con muestra visual en vivo vía `color_preview_controller.js`, sin CDN) para garantizar legibilidad con texto oscuro, y visible como una muestra circular junto al nombre en `/personal`.
+Añade a `Personal` el campo `color` (hexadecimal `#RRGGBB`, opcional con valor por defecto `#ffffff` — blanco), seleccionable exclusivamente de una paleta cerrada de **20 colores claros/pastel** (`Personal::COLORES_DISPONIBLES`) mediante un **cuadro de selección desplegable solo con muestras de color (sin texto visible)** (dropdown Bootstrap 5 en cuadrícula 5×4 sincronizado con el `<select>` oculto de `ChoiceType` vía `color_preview_controller.js`, sin CDN) para garantizar legibilidad con texto oscuro, y visible como una muestra circular junto al nombre en `/personal`.
 
 ## Por qué
 Permitir asignar desde ahora un color identificador a cada trabajador para distinguirlo en el listado y reutilizarlo directamente en `016 · Tabla semanal coloreada`, impidiendo elegir tonos oscuros que dificulten leer el texto.
